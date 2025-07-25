@@ -1,0 +1,623 @@
+{% extends 'base.html.twig' %}
+
+{#{% block title %}Outlet Details - Smart Plan Blueprint{% endblock %}#}
+
+{% block title %}Outlet Details - PrepaidPlus{% endblock %}
+
+{% block header_title %}Outlet Overview{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-item">
+        <a href="{{ path('app_dashboard') }}" style="color: #7f8c8d;" class="breadcrumb-link">Dashboard</a>
+        <span class="breadcrumb-separator"> / </span>
+        <a href="{{ path('outlets', {'id' : merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Outlet-Details</a>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .merchant-container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .merchant-header {
+            background-color: white;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .info-table th {
+            text-align: left;
+            padding: 12px;
+            background-color: var(--light);
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .info-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .section-title {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .keyware-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .keyware-btn {
+            padding: 10px 20px;
+            background-color: var(--light);
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .keyware-btn.active {
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .keyware-btn:hover {
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+        }
+
+        /* Action Button Styles */
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-right: 5px;
+            text-decoration: none;
+            display: inline-block;
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+        }
+
+        .btn-documents {
+            background-color: var(--secondary);
+        }
+
+        .search-nav {
+            margin-top: 20px;
+        }
+
+        .search-nav a {
+            color: var(--primary);
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .search-nav a:hover {
+            text-decoration: underline;
+        }
+
+        #select {
+            width: 100%;
+            margin: 8px 0;
+            display: inline-block;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background: none;
+        }
+
+        /* Enhanced Dropdown Styles */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .action-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Outlet Users Table Styles */
+        .outlet-users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .outlet-users-table th {
+            background-color: var(--light);
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .outlet-users-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .outlet-users-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Indicator */
+        .status-enabled {
+            color: var(--success);
+        }
+
+        .status-disabled {
+            color: var(--danger);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 50%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: modalopen 0.3s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: #555;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Action column width */
+        .action-cell {
+            width: 100px;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .merchant-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .merchant-id {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .merchant-name {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="merchant-container">
+        <!-- Header -->
+        <div class="merchant-header">
+            <div class="header-content">
+                <h2 class="merchant-title">OUTLET DETAILS</h2>
+                <div class="merchant-name">Merchant Name: <strong> Smart Plan Blueprint</strong></div>
+                <div class="merchant-id">Merchant ID: 3928</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="info-card">
+            <div class="keyware-nav">
+                <a href="{{ path('merchant_details', {'id': merchant.id}) }}" class="keyware-btn active">DETAILS</a>
+                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="keyware-btn">PORTAL USERS</a>
+                <a href="{{ path('outlets', {'id': merchant.id}) }}" class="keyware-btn">OUTLETS</a>
+            </div>
+
+            <!-- Quick Actions -->
+            <h3 class="section-title">Quick Actions</h3>
+            <div style="margin-bottom: 20px;">
+                <a href="{{ path('outlet_edit') }}" class="action-btn btn-edit">
+                    <i class="fas fa-edit"></i> Edit Details
+                </a>
+                <a href="{{ path('outlet_documents') }}" class="action-btn btn-documents">
+                    <i class="fas fa-file-alt"></i> View Documents
+                </a>
+                <a href="{{ path('outlet_limits') }}" class="action-btn btn-limits">
+                    <i class="fas fa-sliders-h"></i> Adjust Limits
+                </a>
+            </div>
+
+            <!-- Search & Navigation -->
+            <h3 class="section-title">Search & Navigation</h3>
+            <div class="search-nav">
+                <a href="#">
+                    <i class="fas fa-search"></i> Search by Outlet Name
+                </a>
+                <a href="{{ path('outlets', {'id': merchant.id}) }}">
+                    <i class="fas fa-arrow-left"></i> Back to Outlets List
+                </a>
+            </div>
+            <br>
+
+            <!-- Basic Information -->
+            <div class="info-card">
+                <table class="info-table">
+                    <tr>
+                        <th>Outlet Name</th>
+                        <th>Account</th>
+                        <th>Type</th>
+                        <th>Telephone</th>
+                        <th>City</th>
+                        <th>Date Created</th>
+                        <th>Action</th>
+                    </tr>
+
+                    {% for outlet in outlets %}
+                    <tr>
+                        <td>{{ outlet.name }}</td>
+                        <td>{{ outlet.account }}</td>
+                        <td>{{ outlet.type }}</td>
+                        <td>{{ outlet.telephone }}</td>
+                        <td>{{ outlet.city }}</td>
+                        <td>{{ outlet.dateCreated|date('Y-m-d') }}</td>
+                        <td>    <div class="action-dropdown">
+                                <label for="actionSelect"><select class="action-select" id="actionSelect">
+                                    <option value="">Select Option</option>
+                                    <option value="users">Outlet Users</option>
+                                    <option value="devices">Devices</option>
+                                    <option value="computers">Computers</option>
+                                </select>
+                                </label>
+                            </div></td>
+                    </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No outlets found</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+
+        <!-- Outlet Users Modal -->
+        <div id="outletUsersModal" class="modal">
+            <div class="modal-content" style="width: 70%;">
+                <div class="modal-header">
+                    <h2>Outlet Users</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <table class="outlet-users-table">
+                        <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Is Enabled</th>
+                            <th>Date Created</th>
+                            <th class="action-cell">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for outlet in outlets %}
+                        <tr>
+                            <td>11</td>
+                            <td>Test</td>
+                            <td>Operator</td>
+                            <td class="status-disabled">No</td>
+                            <td>2020-10-19</td>
+                            <td>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" onchange="toggleUserStatus(this, 11)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6">No information found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="action-btn btn-edit close-outlet-users">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="outletDevicesModal" class="modal">
+            <div class="modal-content" style="width: 70%;">
+                <div class="modal-header">
+                    <h2>Outlet Devices</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                </div>
+        </div>
+
+        <div id="outletComputersModal" class="modal">
+            <div class="modal-content" style="width: 70%;">
+                <div class="modal-header">
+                    <h2>Outlet Computers</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Outlet Users Modal functionality
+                const outletUsersModal = document.getElementById('outletUsersModal');
+                const outletDevicesModal = document.getElementById('outletDevicesModal');
+                const outletComputersModal = document.getElementById('outletComputersModal');
+                const actionSelect = document.getElementById('actionSelect');
+                const closeButtons = document.querySelectorAll('.close-modal, .close-outlet-users');
+
+                // Open modal when "Outlet Users" is selected
+                actionSelect.addEventListener('change', function() {
+                    if (this.value === 'users') {
+                        outletUsersModal.style.display = 'block';
+                        // Reset the dropdown selection
+                        this.value = '';
+                    }
+
+                    else if(this.value === 'devices'){
+                        outletDevicesModal.style.display = 'block';
+                        this.value = '';
+                    }
+
+                    else if(this.value === 'computers'){
+                        outletComputersModal.style.display = 'block';
+                        this.value = '';
+                    }
+                });
+
+                // Close modal function
+                function closeModal() {
+                    outletUsersModal.style.display = 'none';
+                    outletDevicesModal.style.display = 'none';
+                    outletComputersModal.style.display = 'none';
+                }
+
+                // Add close event to all close buttons
+                closeButtons.forEach(button => {
+                    button.addEventListener('click', closeModal);
+                });
+
+                // Close when clicking outside modal
+                window.addEventListener('click', function(event) {
+                    if (event.target === outletUsersModal) {
+                        closeModal();
+                    }
+                   else if (event.target === outletDevicesModal) {
+                        closeModal();
+                    }
+                   else if (event.target === outletComputersModal) {
+                       closeModal();
+                    }
+                });
+
+
+                // Initialize toggle switches based on current status
+                document.querySelectorAll('.status-disabled').forEach(cell => {
+                    const row = cell.parentNode;
+                    const toggle = row.querySelector('.toggle-switch input');
+                    if (cell.textContent.trim() === 'Enabled') {
+                        toggle.checked = true;
+                    }
+                });
+            });
+
+            function toggleUserStatus(checkbox, userId) {
+                const row = checkbox.closest('tr');
+                const statusCell = row.querySelector('td:nth-child(4)');
+
+                // Update UI immediately
+                if (checkbox.checked) {
+                    statusCell.textContent = 'Enabled';
+                    statusCell.className = 'status-enabled';
+                } else {
+                    statusCell.textContent = 'Disabled';
+                    statusCell.className = 'status-disabled';
+                }
+
+                // Send update to server
+                fetch(`/outlet/users/${userId}/toggle`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        enabled: checkbox.checked
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Revert UI if update fails
+                        checkbox.checked = !checkbox.checked;
+                        if (checkbox.checked) {
+                            statusCell.textContent = 'Enabled';
+                            statusCell.className = 'status-enabled';
+                        } else {
+                            statusCell.textContent = 'Disabled';
+                            statusCell.className = 'status-disabled';
+                        }
+                    });
+            }
+
+            fetch("{{ path('outlet_user_toggle', {'id': 'USER_ID'}) }}".replace('USER_ID', userId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    enabled: checkbox.checked,
+                    _token: "{{ csrf_token('toggle-user') }}"
+                })
+            })
+        </script>
+    </div>
+{% endblock %}

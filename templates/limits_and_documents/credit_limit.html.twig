@@ -1,0 +1,340 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Limits & Documents - PrepaidPlus{% endblock %}
+
+{% block header_title %}Limits & Documents Overview{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-item">
+        <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .merchant-container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .info-table th {
+            text-align: left;
+            padding: 12px;
+            background-color: var(--light);
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .info-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light);
+        }
+
+
+        /* Enhanced Dropdown Styles
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .action-select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .action-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+*/
+
+
+
+
+        /* Enhanced Dropdown Styles */
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .action-select {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            min-width: 200px; /* Increased width for better visibility */
+            appearance: none; /* Remove default styling */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+
+        .action-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+
+
+
+
+
+
+
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .info-table th {
+            text-align: left;
+            padding: 12px;
+            background-color: var(--light);
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .info-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light);
+        }
+
+
+
+        .credit-limit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .merchant-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .merchant-id {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: var(--light);
+        }
+
+        .refresh-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .export-btn:hover {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="merchant-container">
+        <div class="dashboard-container">
+            <!-- Merchant Header -->
+            <div class="dashboard-card">
+                <div class="credit-limit-header">
+                    <div class="header-content">
+                        <h2 class="merchant-title">Smart Plan Blueprint</h2>
+                        <div class="merchant-id">Merchant ID: 3928</div>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="action-btn refresh-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="action-btn export-btn">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financials -->
+            <div class="dashboard-card">
+                <div class="filter-container">
+                    <div class="action-dropdown">
+                        <select class="action-select" id="actionSelect">
+                            <option value="">Filter By</option>
+                            <option value="{{ path('app_limits_and_docs') }}">Credit Limit</option>
+                            <option value="{{ path('providers') }}">Providers</option>
+                            <option value="{{ path('merchant_commissions') }}">Merchant Agreement</option>
+                        </select>
+                    </div>
+
+                    <!--Credit Limit-->
+                    <div class="dashboard-card">
+                        <h3 style="margin-top: 0; color: var(--primary);">Credit Limit</h3>
+
+                        <!-- Credit Limit Table -->
+                        <table class="info-table">
+                            <thead>
+                            <tr>
+                                <th>Date Approved</th>
+                                <th>Credit Amount</th>
+                                <th>Expity Date</th>
+                                <th>Status</th>
+                                <th>Authorized By</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>2025-02-20</td>
+                                <td>10,000.00</td>
+                                <td>2026-04-30</td>
+                                <td>Approved</td>
+                                <td>Admin</td>
+                                <td>
+                                    <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;">Edit</a> /
+                                    <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d">Remove</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {{ parent() }}
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize date range
+                setDateRange('today');
+
+                // Dropdown navigation
+                const actionSelect = document.getElementById('actionSelect');
+                if (actionSelect) {
+                    actionSelect.addEventListener('change', function() {
+                        if (this.value) {
+                            window.location.href = this.value;
+                        }
+                    });
+                }
+
+                // Refresh button functionality
+                document.querySelector('.refresh-btn')?.addEventListener('click', function() {
+                    window.location.reload();
+                });
+
+                // Export button functionality
+                document.querySelector('.export-btn')?.addEventListener('click', function() {
+                    // Implement your export functionality here
+                    alert('Export functionality would go here');
+                    // Or implement actual export logic
+                    // exportToCSV();
+                });
+            });
+
+            function setDateRange(range) {
+                const today = new Date();
+                let startDate, endDate;
+
+                switch(range) {
+                    case 'today':
+                        startDate = new Date(today);
+                        endDate = new Date(today);
+                        break;
+                    case 'week':
+                        startDate = new Date(today);
+                        startDate.setDate(today.getDate() - 6);
+                        endDate = new Date(today);
+                        break;
+                    case 'month':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                        endDate = new Date(today);
+                        break;
+                }
+
+                const formattedStart = formatDate(startDate);
+                const formattedEnd = formatDate(endDate);
+
+                const dateRangeDisplay = document.getElementById('dateRangeDisplay');
+                if (dateRangeDisplay) {
+                    dateRangeDisplay.textContent = formattedStart === formattedEnd
+                        ? formattedStart
+                        : `${formattedStart} - ${formattedEnd}`;
+                }
+            }
+
+            function formatDate(date) {
+                const options = {
+                    month: 'long',
+                    day: 'numeric',
+                    year: date.getMonth() !== new Date().getMonth() ? 'numeric' : undefined
+                };
+
+                let formatted = date.toLocaleDateString('en-US', options);
+                const day = date.getDate();
+                const suffix = (day % 10 === 1 && day !== 11) ? 'st' :
+                    (day % 10 === 2 && day !== 12) ? 'nd' :
+                        (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
+
+                return formatted.replace(/(\d+)/, `$1${suffix}`);
+            }
+
+
+
+        </script>
+
+    {% endblock %}
+{% endblock %}

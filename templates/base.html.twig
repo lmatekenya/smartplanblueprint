@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>{% block title %}PrepaidPlus{% endblock %}</title>
+    {% block stylesheets %}
+        <style>
+            :root {
+                --primary: #2c3e50;
+                --secondary: rgba(121, 151, 170, 0.98);
+                --success: rgba(121, 151, 170, 0.98);
+                --danger: #e74c3c;
+                --warning: #f39c12;
+                --light: #ecf0f1;
+                --dark: rgb(72, 100, 143);
+                --white: #ffffff;
+                --gray: #7f8c8d;
+            }
+
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                display: grid;
+                grid-template-columns: 250px 1fr;
+                grid-template-rows: 60px 1fr;
+                height: 100vh;
+            }
+
+            /* Header Styles */
+            .header {
+                grid-column: 2;
+                background-color: var(--white);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 20px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: var(--primary);
+                margin: 0;
+            }
+
+            .breadcrumb {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: var(--gray);
+            }
+
+            .breadcrumb-separator {
+                opacity: 0.6;
+            }
+
+            .header-icons {
+                display: flex;
+                gap: 15px;
+            }
+
+            .header-icons i {
+                color: var(--dark);
+                cursor: pointer;
+                font-size: 20px;
+                transition: color 0.2s;
+            }
+
+            .header-icons i:hover {
+                color: var(--primary);
+            }
+
+            /* Sidebar Styles */
+            .sidebar {
+                grid-row: 1 / span 2;
+                background-color: var(--primary);
+                color: var(--white);
+                padding: 20px 0;
+            }
+
+            .sidebar-brand {
+                padding: 0 20px 20px;
+                margin: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                font-size: 1.3rem;
+                font-weight: 600;
+            }
+
+            .sidebar-item {
+                padding: 12px 20px;
+                color: var(--white);
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.3s;
+            }
+
+            .sidebar-item:hover {
+                background-color: rgba(255,255,255,0.1);
+            }
+
+            .sidebar-item.active {
+                background-color: rgba(255,255,255,0.2);
+                border-left: 4px solid var(--secondary);
+                font-weight: 500;
+            }
+
+            /* Main Content Styles */
+            .main-content {
+                padding: 20px;
+                background-color: #f5f7fa;
+                overflow-y: auto;
+            }
+
+            /* Dashboard Card Styles */
+            .dashboard-card {
+                background-color: var(--white);
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .metric-card {
+                border-left: 4px solid;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .metric-card.opening { border-color: var(--secondary); }
+            .metric-card.deposits { border-color: var(--success); }
+            .metric-card.sales { border-color: var(--danger); }
+            .metric-card.commission { border-color: rgba(170, 160, 121, 0.98); }
+            .metric-card.closing { border-color: var(--warning); }
+
+            .negative-value {
+                color: var(--danger);
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% endblock %}
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2 class="sidebar-brand">Smart Plan Blueprint</h2>
+    <a href="{{ path('app_dashboard') }}" class="sidebar-item {{ app.request.get('_route') == 'app_dashboard' ? 'active' : '' }}">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <a href="{{ path('app_financials') }}" class="sidebar-item {{ app.request.get('_route') starts with 'app_financials' ? 'active' : '' }}">
+        <i class="fas fa-chart-line"></i> Financials
+    </a>
+    <a href="{{ path('app_limits_and_docs') }}" class="sidebar-item {{ app.request.get('_route') starts with 'app_limits_and_docs' ? 'active' : '' }}">
+        <i class="fas fa-file-clipboard"></i> Limits & Documents
+    </a>
+    <a href="{{ path('app_reports') }}" class="sidebar-item {{ app.request.get('_route') == 'app_reports' ? 'active' : '' }}">
+        <i class="fas fa-file-alt"></i> Reports
+    </a>
+    <a href="{{  path('app_logout') }}" class="sidebar-item">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+
+<!-- Header -->
+<div class="header">
+    <div>
+        <h3 class="header-title">{% block header_title %}Merchant Dashboard{% endblock %}</h3>
+        <div class="breadcrumb">
+            <span>PrepaidPlus</span>
+            <span class="breadcrumb-separator">/</span>
+            <span>{% block breadcrumb %}Dashboard{% endblock %}</span>
+        </div>
+    </div>
+    <div class="header-icons">
+        <i class="fas fa-search" title="Search"></i>
+        <i class="fas fa-question-circle" title="Help"></i>
+        <i class="fas fa-cog" title="Settings"></i>
+        <i class="fas fa-user-circle" title="Profile"></i>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+    {% block body %}{% endblock %}
+</main>
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Highlight current page in sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentRoute = "{{ app.request.get('_route') }}";
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === window.location.pathname) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

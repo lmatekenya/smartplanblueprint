@@ -1,0 +1,445 @@
+{# templates/reports/index.html.twig #}
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}Reports - PrepaidPlus{% endblock %}#}
+
+{#{% block header_title %}Reports Dashboard{% endblock %}#}
+
+{#{% block breadcrumb %}#}
+{#    <div class="breadcrumb-item">#}
+{#        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>#}
+{#        <span class="breadcrumb-separator"></span>#}
+
+{#    </div>#}
+{#{% endblock %}#}
+
+{#{% block stylesheets %}#}
+{#    {{ parent() }}#}
+{#    <style>#}
+{#        .reports-container {#}
+{#            margin-top: 20px;#}
+{#        }#}
+
+{#        .report-category {#}
+{#            margin-bottom: 30px;#}
+{#        }#}
+
+{#        .report-category h3 {#}
+{#            color: var(--primary);#}
+{#            border-bottom: 1px solid var(--light);#}
+{#            padding-bottom: 8px;#}
+{#            margin-bottom: 15px;#}
+{#        }#}
+
+{#        .report-items {#}
+{#            display: grid;#}
+{#            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));#}
+{#            gap: 20px;#}
+{#        }#}
+
+{#        .report-item {#}
+{#            background-color: var(--white);#}
+{#            border-radius: 8px;#}
+{#            box-shadow: 0 2px 4px rgba(0,0,0,0.1);#}
+{#            padding: 15px;#}
+{#            display: flex;#}
+{#            align-items: flex-start;#}
+{#            transition: transform 0.2s;#}
+{#        }#}
+
+{#        .report-item:hover {#}
+{#            transform: translateY(-3px);#}
+{#            box-shadow: 0 4px 8px rgba(0,0,0,0.15);#}
+{#        }#}
+
+{#        .report-item i {#}
+{#            font-size: 24px;#}
+{#            color: var(--secondary);#}
+{#            margin-right: 15px;#}
+{#            margin-top: 5px;#}
+{#        }#}
+
+{#        .report-content {#}
+{#            flex: 1;#}
+{#        }#}
+
+{#        .report-content h4 {#}
+{#            margin: 0 0 10px 0;#}
+{#            color: var(--dark);#}
+{#        }#}
+
+{#        .btn-generate, .btn-view {#}
+{#            padding: 6px 12px;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            cursor: pointer;#}
+{#            font-size: 0.9rem;#}
+{#            margin-right: 8px;#}
+{#            transition: background-color 0.2s;#}
+{#        }#}
+
+{#        .btn-generate {#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#        }#}
+
+{#        .btn-generate:hover {#}
+{#            background-color: var(--primary);#}
+{#        }#}
+
+{#        .btn-view {#}
+{#            background-color: var(--light);#}
+{#            color: var(--dark);#}
+{#        }#}
+
+{#        .btn-view:hover {#}
+{#            background-color: #d5dbdb;#}
+{#        }#}
+
+{#        @media (max-width: 768px) {#}
+{#            .report-items {#}
+{#                grid-template-columns: 1fr;#}
+{#            }#}
+{#        }#}
+{#    </style>#}
+{#{% endblock %}#}
+
+{#{% block body %}#}
+{#    <div class="dashboard-card">#}
+{#        <h2>Reports</h2>#}
+
+{#        <div class="reports-container">#}
+{#            {% for category, reports in reportCategories %}#}
+{#                <div class="report-category">#}
+{#                    <h3>{{ category }}</h3>#}
+{#                    <div class="report-items">#}
+{#                        {% for report in reports %}#}
+{#                            <div class="report-item">#}
+{#                                <i class="fas fa-file-alt"></i>#}
+{#                                <div class="report-content">#}
+{#                                    <h4>{{ report }}</h4>#}
+{#                                    <button class="btn-generate">Generate Report</button>#}
+{#                                    <a href="{{ path('app_transactions') }}" class=" btn-view fas fa-street-view"></a>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+
+{#{% block javascripts %}#}
+{#    {{ parent() }}#}
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            // Add click handlers for report buttons#}
+{#            document.querySelectorAll('.btn-generate').forEach(btn => {#}
+{#                btn.addEventListener('click', function() {#}
+{#                    const reportName = this.closest('.report-content').querySelector('h4').textContent;#}
+{#                    alert(`Generating report: ${reportName}`);#}
+{#                    // Here you would typically make an AJAX call to generate the report#}
+{#                });#}
+{#            });#}
+
+{#            document.querySelectorAll('.btn-download').forEach(btn => {#}
+{#                btn.addEventListener('click', function() {#}
+{#                    const reportName = this.closest('.report-content').querySelector('h4').textContent;#}
+{#                    alert(`Downloading report: ${reportName}`);#}
+{#                    // Here you would typically initiate a download#}
+{#                });#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
+
+{# templates/reports/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Reports - PrepaidPlus{% endblock %}
+
+{% block header_title %}Reports Dashboard{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-item">
+        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <span class="breadcrumb-separator"></span>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .reports-container {
+            margin-top: 20px;
+        }
+
+        .report-category {
+            margin-bottom: 30px;
+        }
+
+        .report-category h3 {
+            color: var(--primary);
+            border-bottom: 1px solid var(--light);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .report-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .report-item {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s;
+        }
+
+        .report-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .report-item i {
+            font-size: 24px;
+            color: var(--secondary);
+            margin-right: 15px;
+            margin-top: 5px;
+        }
+
+        .report-content {
+            flex: 1;
+        }
+
+        .report-content h4 {
+            margin: 0 0 10px 0;
+            color: var(--dark);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-generate, .btn-view {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .btn-generate {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background-color: var(--primary);
+        }
+
+        .btn-view {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-view:hover {
+            background-color: #d5dbdb;
+        }
+
+        @media (max-width: 768px) {
+            .report-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-card">
+        <h2>Reports</h2>
+
+        <div class="reports-container">
+            {% for category, reports in reportCategories %}
+                <div class="report-category">
+                    <h3>{{ category }}</h3>
+                    <div class="report-items">
+                        {% for report in reports %}
+                            <div class="report-item">
+                                <i class="fas fa-file-alt"></i>
+                                <div class="report-content">
+                                    <h4>{{ report }}</h4>
+                                    <div class="report-actions">
+                                        <button class="btn-generate">Generate Report</button>
+                                        <a href="{{ path(get_report_route(report)) }}" class="btn-view">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <!-- For PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- For Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+
+            document.querySelectorAll('.btn-generate').forEach(btn => {
+
+
+                btn.addEventListener('click', function() {
+                    const reportContent = this.closest('.report-content');
+                    const reportName = reportContent.querySelector('h4').textContent;
+                    const format = this.dataset.format; // Gets the format from data-format attribute
+
+                    // Get the report data (this would typically come from your backend)
+                    const reportData = getReportData(reportName);
+
+                    // Create export options modal
+                    const modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '1000';
+
+                    const modalContent = document.createElement('div');
+                    modalContent.style.backgroundColor = 'white';
+                    modalContent.style.padding = '2rem';
+                    modalContent.style.borderRadius = '0.5rem';
+                    modalContent.style.width = '400px';
+                    modalContent.style.maxWidth = '90%';
+
+                    modalContent.innerHTML = `
+        <h3 style="margin-top: 0;">Export Report</h3>
+        <p>Select export format:</p>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button class="export-option" data-format="csv" style="flex: 1; padding: 0.5rem; background-color: #2ecc71; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">CSV</button>
+            <button class="export-option" data-format="excel" style="flex: 1; padding: 0.5rem; background-color: #3498db; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Excel</button>
+            <button class="export-option" data-format="pdf" style="flex: 1; padding: 0.5rem; background-color: #e74c3c; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">PDF</button>
+        </div>
+        <button id="cancel-export" style="padding: 0.5rem 1rem; background-color: #95a5a6; color: white; border: none; border-radius: 0.25rem; cursor: pointer; float: right;">Cancel</button>
+    `;
+
+                    modal.appendChild(modalContent);
+                    document.body.appendChild(modal);
+
+                    switch(format) {
+                        case 'pdf':
+                            exportToPDF(reportName, reportData);
+                            break;
+                        case 'excel':
+                            exportToExcel(reportName, reportData);
+                            break;
+                        case 'csv':
+                            exportToCSV(reportName, reportData);
+                            break;
+                        default:
+                            alert(`Generating report: ${reportName}`);
+                        // Default AJAX call to generate report would go here
+                    }
+                });
+            });
+        });
+
+
+
+        function getReportData(reportName) {
+            // In a real implementation, this would be an AJAX call to your backend
+            // For demonstration, we'll return mock data
+            return {
+                headers: ['ID', 'Name', 'Value'],
+                rows: [
+                    [1, 'Item 1', 100],
+                    [2, 'Item 2', 200],
+                    [3, 'Item 3', 300]
+                ]
+            };
+        }
+
+        function exportToPDF(reportName, data) {
+            // Using jsPDF library for PDF generation
+            const doc = new jsPDF();
+
+            // Add title
+            doc.text(reportName, 10, 10);
+
+            // Add table
+            doc.autoTable({
+                head: [data.headers],
+                body: data.rows,
+                startY: 20
+            });
+
+            // Save the PDF
+            doc.save(`${reportName}.pdf`);
+        }
+
+        function exportToExcel(reportName, data) {
+            // Using SheetJS library for Excel export
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([
+                data.headers,
+                ...data.rows
+            ]);
+
+            XLSX.utils.book_append_sheet(wb, ws, "Report");
+            XLSX.writeFile(wb, `${reportName}.xlsx`);
+        }
+
+        function exportToCSV(reportName, data) {
+            // Convert data to CSV format
+            let csvContent = data.headers.join(',') + '\n';
+            data.rows.forEach(row => {
+                csvContent += row.join(',') + '\n';
+            });
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${reportName}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+{% endblock %}

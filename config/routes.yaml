@@ -1,0 +1,68 @@
+# config/routes.yaml
+
+# Login page route
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+app_logout:
+    path: /logout
+
+# Main dashboard route
+app_dashboard:
+    path: /dashboard
+    controller: App\Controller\DashboardController::index
+    methods: GET
+
+# Redirect root to dashboard
+app_home:
+    path: /
+    controller: App\Controller\DashboardController::home
+    methods: GET
+
+#Redirect to Merchant Details
+merchant_show:
+    path: /details/{id}
+    controller: App\Controller\MerchantController::details
+    methods: GET
+
+portal_users:
+    path: /portal_users/{id}
+    controller: App\Controller\PortalUser\PortalUserController::portalUsers
+    methods: GET
+
+outlets:
+    path: /outlets/{id}
+    controller: App\Controller\PortalUser\OutletController:outlets
+    methods: GET
+
+#Navigate through Financials
+app_financials:
+        path: /financials
+        controller: App\Controller\FinancialsController::show_financials
+        methods: GET
+
+#Navigate through Limits and Documents
+app_limits_and_docs:
+    path: /limits
+    controller: App\Controller\LimitsAndDocsController::show_limits_and_documents
+    methods: GET
+
+merchant_commissions:
+        path: /merchant/commissions
+        controller: App\Controller\LimitsAndDocsController::commissions
+
+reports:
+    path: /reports
+    controller: App\Controller\Reports\ReportsController::reports
+
+
+#merchant_details:
+#    path: /merchant/details/{id}
+#    controller: App\Controller\MerchantController::details
+#    methods: GET
+
+# Import all other controllers (keep this at bottom)
+controllers:
+    resource: ../src/Controller/
+    type: attribute

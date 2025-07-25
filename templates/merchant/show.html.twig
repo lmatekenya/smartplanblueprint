@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Merchant Details - PrepaidPlus{% endblock %}
+
+{% block header_title %}Merchant Overview{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-item">
+        <a href="{{ path('app_dashboard') }}" style="color: #7f8c8d;" class="breadcrumb-link">Dashboard</a>
+        <span class="breadcrumb-separator"> / </span>
+        <a href="{{ path('merchant_show', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Merchant-Details</a>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .merchant-container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .merchant-header {
+            background-color: white;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .info-table th {
+            text-align: left;
+            padding: 12px;
+            background-color: var(--light);
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .info-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .section-title {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .keyware-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .keyware-btn {
+            padding: 10px 20px;
+            background-color: var(--light);
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .keyware-btn.active {
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .keyware-btn:hover {
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+        }
+
+        .contact-card {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .merchant-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .merchant-id {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .merchant-name {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+
+{% block body %}
+    <div class="merchant-container">
+        <!-- Header -->
+        <div class="merchant-header">
+            <div class="header-content">
+                <h2 class="merchant-title">MERCHANT DETAILS</h2>
+                <div class="merchant-name">Merchant Name: <strong>{{ merchant.name }}</strong></div>
+                <div class="merchant-id">Merchant ID: {{ merchant.code }}</div>
+            </div>
+        </div>
+
+        <!-- Keyware Navigation -->
+        <div class="info-card">
+            <div class="keyware-nav">
+                <a href="{{ path('merchant_details', {'id': merchant.id}) }}" class="keyware-btn active">DETAILS</a>
+                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="keyware-btn">PORTAL USERS</a>
+                <a href="{{ path('outlets', {'id': merchant.id}) }}" class="keyware-btn">OUTLETS</a>
+            </div>
+
+            <table class="info-table">
+                <tr>
+                    <th>Name</th>
+                    <th>Group</th>
+                    <th>Account</th>
+                </tr>
+                <tr>
+                    <td>{{ merchant.name }}</td>
+                    <td>{{ merchant.name ?? 'N/A' }}</td>
+                    <td>{{ merchant.code }}</td>
+                </tr>
+                <tr>
+                    <th>Date Registered</th>
+                    <th>Is Merchant Active</th>
+                    <th>Client ID</th>
+                </tr>
+                <tr>
+                    <td>{{ merchant.registrationDate ? merchant.registrationDate|date('Y-m-d') : 'N/A' }}</td>
+                    <td>{{ merchant.isActive ? 'Yes' : 'No' }}</td>
+                    <td>{{ merchant.clientId ?? 'N/A' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="info-card">
+            <h3 class="section-title">CONTACT</h3>
+            <div class="contact-card">
+                <div><strong>{{ details.contactName ?? 'N/A' }}</strong></div>
+                <div>{{ details.contactEmail ?? 'N/A' }}</div>
+                <div>{{ details.contactPhone ?? 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{#{% block body %}#}
+{#    <div class="merchant-container">#}
+{#        <!-- Header -->#}
+{#        <div class="merchant-header">#}
+{#            <div class="header-content">#}
+{#                <h2 class="merchant-title">MERCHANT DETAILS</h2>#}
+{#                <div class="merchant-name">Merchant Name: <strong> Smart Plan Blueprint</strong></div>#}
+{#                <div class="merchant-id">Merchant ID: 3928</div>#}
+{#            </div>#}
+{#        </div>#}
+
+
+{#        <!-- Keyware Navigation -->#}
+{#        <div class="info-card">#}
+{#            <div class="keyware-nav">#}
+{#                <a href="{{ path('merchant_details') }}" class="keyware-btn active">DETAILS</a>#}
+{#                <a href="{{ path('portal_users') }}" class="keyware-btn">PORTAL USERS</a>#}
+{#                <a href="{{ path('outlets') }}" class="keyware-btn">OUTLETS</a>#}
+{#            </div>#}
+
+{#            <table class="info-table">#}
+{#                <tr>#}
+{#                    <th>Name</th>#}
+{#                    <th>Group</th>#}
+{#                    <th>Account</th>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <td>Smart Plan Blueprint</td>#}
+{#                    <td>Smart Plan Blueprint</td>#}
+{#                    <td>3928</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <th>Date Registered</th>#}
+{#                    <th>Is Merchant Active</th>#}
+{#                    <th>Client ID</th>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <td>2020-10-19</td>#}
+{#                    <td>Yes</td>#}
+{#                    <td>PP002</td>#}
+{#                </tr>#}
+{#            </table>#}
+{#        </div>#}
+
+{#        <!-- Contact Information -->#}
+{#        <div class="info-card">#}
+{#            <h3 class="section-title">CONTACT</h3>#}
+{#            <div class="contact-card">#}
+{#                <div><strong>Mosimanegape Setlhake</strong></div>#}
+{#                <div>m.setlhake@smartplanblueprint.net</div>#}
+{#                <div>72486002</div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}

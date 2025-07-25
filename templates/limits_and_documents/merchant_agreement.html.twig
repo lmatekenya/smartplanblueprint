@@ -1,0 +1,742 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Limits & Documents - PrepaidPlus{% endblock %}
+
+{% block header_title %}Limits & Documents Overview{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-item">
+        <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="{{ path('merchant_commissions') }}" style="color: #7f8c8d;" class="breadcrumb-link">Merchant-Agreement</a>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Custom variables that won't override base template colors */
+        :root {
+            --dashboard-primary: #3498db;       /* Blue */
+            --dashboard-primary-light: #5dade2;
+            --dashboard-primary-dark: #2874a6;
+            --dashboard-secondary: #2ecc71;     /* Green */
+            --dashboard-secondary-light: #58d68d;
+            --dashboard-secondary-dark: #27ae60;
+            --dashboard-tertiary: #e74c3c;       /* Red */
+            --dashboard-tertiary-light: #ec7063;
+            --dashboard-tertiary-dark: #c0392b;
+            --dashboard-quaternary: #f39c12;     /* Orange */
+            --dashboard-quaternary-light: #f8c471;
+            --dashboard-quaternary-dark: #d35400;
+            --dashboard-light: #f8f9fa;
+            --dashboard-light-gray: #e9ecef;
+            --dashboard-medium-gray: #dee2e6;
+            --dashboard-dark-gray: #adb5bd;
+            --dashboard-dark: #343a40;
+            --dashboard-white: #ffffff;
+            --dashboard-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --dashboard-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .commission-dashboard {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: inherit; /* Inherit from base */
+            color: inherit; /* Inherit from base */
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--dashboard-medium-gray);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dashboard-light-gray);
+            transform: translateY(-2px);
+            box-shadow: var(--dashboard-shadow-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--dashboard-light-gray);
+            transform: translateY(-2px);
+            box-shadow: var(--dashboard-shadow-hover);
+        }
+
+        .commission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .commission-card {
+            background-color: var(--dashboard-white);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--dashboard-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .commission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--dashboard-shadow-hover);
+        }
+
+        .card-header {
+            padding: 1.25rem;
+            color: var(--dashboard-white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .commission-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--dashboard-light-gray);
+        }
+
+        .commission-item:last-child {
+            border-bottom: none;
+        }
+
+        .service-name {
+            font-weight: 500;
+            color: var(--dashboard-dark);
+        }
+
+        .commission-rate {
+            font-weight: 600;
+            color: var(--dashboard-dark);
+        }
+
+        .agreement-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: inherit; /* Inherit from base */
+        }
+
+        .agreement-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .agreement-card {
+            background-color: var(--dashboard-white);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--dashboard-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .agreement-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .agreement-card h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--dashboard-dark);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--dashboard-medium-gray);
+        }
+
+        .agreement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+
+        .agreement-item span:first-child {
+            color: var(--dashboard-dark-gray);
+        }
+
+        .count {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dashboard-primary);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+
+        .upload-btn {
+            background-color: var(--secondary);
+            color: var(--dashboard-white);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .upload-btn:hover {
+            background-color: var(--dashboard-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--dashboard-shadow-hover);
+        }
+
+        .view-btn {
+            background-color: var(--secondary); /* Green from your color scheme */
+            color: var(--dashboard-white);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+            box-shadow: var(--dashboard-shadow);
+        }
+
+        .view-btn:hover {
+            background-color: var(--dashboard-primary-dark); /* Darker green on hover */
+            transform: translateY(-2px);
+            box-shadow: var(--dashboard-shadow-hover);
+        }
+
+        .view-btn i {
+            font-size: 0.9rem; /* Slightly smaller icon for better proportion */
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="commission-dashboard">
+        <div class="dashboard-header">
+            <h1>Merchant Agreement</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-download"></i> Export Report
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Print Summary
+                </button>
+            </div>
+        </div>
+
+        <div class="commission-grid">
+            <!-- Airtime Commission Card -->
+            <div class="commission-card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-primary-dark));">
+                    <h2>Airtime Commission</h2>
+                    <span class="badge">Monthly</span>
+                </div>
+                <div class="card-body">
+                    {% for commission in airtimeCommissions %}
+                        <div class="commission-item">
+                            <span class="service-name">{{ commission.service }}</span>
+                            <span class="commission-rate">{{ commission.rate }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Electricity Commission Card -->
+            <div class="commission-card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--dashboard-secondary), var(--dashboard-secondary-dark));">
+                    <h2>Electricity Commission</h2>
+                    <span class="badge">Monthly</span>
+                </div>
+                <div class="card-body">
+                    {% for commission in electricityCommissions %}
+                        <div class="commission-item">
+                            <span class="service-name">{{ commission.service }}</span>
+                            <span class="commission-rate">{{ commission.rate }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Collections Commission Card -->
+            <div class="commission-card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--dashboard-tertiary), var(--dashboard-tertiary-dark));">
+                    <h2>Collections Commission</h2>
+                    <span class="badge">Per Transaction</span>
+                </div>
+                <div class="card-body">
+                    {% for commission in collectionsCommissions %}
+                        <div class="commission-item">
+                            <span class="service-name">{{ commission.service }}</span>
+                            <span class="commission-rate">P{{ commission.rate }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Bill Payments Card -->
+            <div class="commission-card">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--dashboard-quaternary), var(--dashboard-quaternary-dark));">
+                    <h2>Bill Payments</h2>
+                    <span class="badge">Per Transaction</span>
+                </div>
+                <div class="card-body">
+                    {% for commission in billPayments %}
+                        <div class="commission-item">
+                            <span class="service-name">{{ commission.service }}</span>
+                            <span class="commission-rate">P{{ commission.rate }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="agreement-section">
+            <h2 class="section-title">Commission Frequency</h2>
+            <div class="agreement-cards">
+                <div class="agreement-card">
+                    <h3>Agreement View</h3>
+                    <div class="agreement-item">
+                        <span>Active Services</span>
+{#                        <span class="count">{{ agreementCounts.view }}</span>#}
+                        <button class="view-btn" title="View">
+                            <i class="fas fa-street-view"></i>
+                        </button>
+
+                        <button class="upload-btn" title="Upload document">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="agreement-card">
+                    <h3>Omang / Registration</h3>
+                    <div class="agreement-item">
+                        <span>Active Services</span>
+{#                        <span class="count">{{ agreementCounts.registration }}</span>#}
+                        <button class="upload-btn" title="Upload document">
+                            <i class="fas fa-upload"></i>
+                        </button>
+
+                    </div>
+                </div>
+                <div class="agreement-card">
+                    <h3>Affidavit / Other</h3>
+                    <div class="agreement-item">
+                        <span>Active Services</span>
+{#                        <span class="count">{{ agreementCounts.affidavit }}</span>#}
+                        <button class="upload-btn" title="Upload document">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Print button functionality
+            document.querySelector('.btn-secondary').addEventListener('click', function() {
+                window.print();
+            });
+
+            // // Export button functionality
+            // document.querySelector('.btn-primary').addEventListener('click', function() {
+            //     // Implement export functionality here
+            //     alert('Export functionality would be implemented here');
+            // });
+
+            // Add animation to cards when they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.commission-card, .agreement-card').forEach(card => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+
+
+            // Export button functionality
+            document.querySelector('.btn-primary').addEventListener('click', function() {
+                // Prepare the data for export
+                const exportData = {
+                    title: "Merchant Commission Structure Report",
+                    date: new Date().toLocaleDateString(),
+                    airtimeCommissions: JSON.parse('{{ airtimeCommissions|json_encode|raw }}'),
+                    electricityCommissions: JSON.parse('{{ electricityCommissions|json_encode|raw }}'),
+                    collectionsCommissions: JSON.parse('{{ collectionsCommissions|json_encode|raw }}'),
+                    billPayments: JSON.parse('{{ billPayments|json_encode|raw }}'),
+                    agreementCounts: JSON.parse('{{ agreementCounts|json_encode|raw }}')
+                };
+
+                // Create export options modal
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '1000';
+
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = 'white';
+                modalContent.style.padding = '2rem';
+                modalContent.style.borderRadius = '0.5rem';
+                modalContent.style.width = '400px';
+                modalContent.style.maxWidth = '90%';
+
+                modalContent.innerHTML = `
+        <h3 style="margin-top: 0;">Export Report</h3>
+        <p>Select export format:</p>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button class="export-option" data-format="csv" style="flex: 1; padding: 0.5rem; background-color: #2ecc71; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">CSV</button>
+            <button class="export-option" data-format="excel" style="flex: 1; padding: 0.5rem; background-color: #3498db; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Excel</button>
+            <button class="export-option" data-format="pdf" style="flex: 1; padding: 0.5rem; background-color: #e74c3c; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">PDF</button>
+        </div>
+        <button id="cancel-export" style="padding: 0.5rem 1rem; background-color: #95a5a6; color: white; border: none; border-radius: 0.25rem; cursor: pointer; float: right;">Cancel</button>
+    `;
+
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+
+                // Handle export format selection
+                document.querySelectorAll('.export-option').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const format = this.getAttribute('data-format');
+                        exportReport(exportData, format);
+                        document.body.removeChild(modal);
+                    });
+                });
+
+                // Handle cancel
+                document.getElementById('cancel-export').addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            function exportReport(data, format) {
+                switch(format) {
+                    case 'csv':
+                        exportToCSV(data);
+                        break;
+                    case 'excel':
+                        exportToExcel(data);
+                        break;
+                    case 'pdf':
+                        exportToPDF(data);
+                        break;
+                    default:
+                        console.error('Unknown export format:', format);
+                }
+            }
+
+            function exportToCSV(data) {
+                let csvContent = "Category,Service,Rate/Rate Type\n";
+
+                // Add Airtime Commissions
+                data.airtimeCommissions.forEach(commission => {
+                    csvContent += `Airtime Commission,${commission.service},${commission.rate}%\n`;
+                });
+
+                // Add Electricity Commissions
+                data.electricityCommissions.forEach(commission => {
+                    csvContent += `Electricity Commission,${commission.service},${commission.rate}%\n`;
+                });
+
+                // Add Collections Commissions
+                data.collectionsCommissions.forEach(commission => {
+                    csvContent += `Collections Commission,${commission.service},P${commission.rate}\n`;
+                });
+
+                // Add Bill Payments
+                data.billPayments.forEach(commission => {
+                    csvContent += `Bill Payments,${commission.service},P${commission.rate}\n`;
+                });
+
+                // Add Agreement Counts
+                csvContent += `Agreement View,Active Services,${data.agreementCounts.view}\n`;
+                csvContent += `Omang/Registration,Active Services,${data.agreementCounts.registration}\n`;
+                csvContent += `Affidavit/Other,Active Services,${data.agreementCounts.affidavit}\n`;
+
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `Commission_Report_${new Date().toISOString().slice(0,10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function exportToExcel(data) {
+                // For Excel export, we'll use the excellent SheetJS library (xlsx)
+                // First check if it's loaded, if not load it dynamically
+                if (typeof XLSX === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+                    script.onload = () => exportToExcel(data);
+                    document.head.appendChild(script);
+                    return;
+                }
+
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: data.title,
+                    Subject: "Merchant Commission Report",
+                    Author: "Your System",
+                    CreatedDate: new Date()
+                };
+
+                // Prepare worksheet data
+                const wsData = [
+                    ["Category", "Service", "Rate/Rate Type"],
+                    ...data.airtimeCommissions.map(c => ["Airtime Commission", c.service, c.rate + "%"]),
+                    ...data.electricityCommissions.map(c => ["Electricity Commission", c.service, c.rate + "%"]),
+                    ...data.collectionsCommissions.map(c => ["Collections Commission", c.service, "P" + c.rate]),
+                    ...data.billPayments.map(c => ["Bill Payments", c.service, "P" + c.rate]),
+                    ["Agreement View", "Active Services", data.agreementCounts.view],
+                    ["Omang/Registration", "Active Services", data.agreementCounts.registration],
+                    ["Affidavit/Other", "Active Services", data.agreementCounts.affidavit]
+                ];
+
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                XLSX.utils.book_append_sheet(wb, ws, "Commission Report");
+
+                // Generate and download file
+                XLSX.writeFile(wb, `Commission_Report_${new Date().toISOString().slice(0,10)}.xlsx`);
+            }
+
+            function exportToPDF(data) {
+                // For PDF export, we'll use jsPDF with autoTable plugin
+                // First check if it's loaded, if not load it dynamically
+                if (typeof jsPDF === 'undefined') {
+                    const script1 = document.createElement('script');
+                    script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js';
+
+                    script1.onload = script2.onload = () => exportToPDF(data);
+                    document.head.appendChild(script1);
+                    document.head.appendChild(script2);
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Add title
+                doc.setFontSize(18);
+                doc.text(data.title, 14, 15);
+                doc.setFontSize(11);
+                doc.text(`Generated on: ${data.date}`, 14, 22);
+
+                // Prepare data for tables
+                const airtimeData = data.airtimeCommissions.map(c => [c.service, c.rate + "%"]);
+                const electricityData = data.electricityCommissions.map(c => [c.service, c.rate + "%"]);
+                const collectionsData = data.collectionsCommissions.map(c => [c.service, "P" + c.rate]);
+                const billPaymentsData = data.billPayments.map(c => [c.service, "P" + c.rate]);
+                const agreementData = [
+                    ["Agreement View", data.agreementCounts.view],
+                    ["Omang/Registration", data.agreementCounts.registration],
+                    ["Affidavit/Other", data.agreementCounts.affidavit]
+                ];
+
+                let yPos = 30;
+
+                // Add Airtime Commission table
+                doc.autoTable({
+                    head: [['Airtime Commission', 'Rate']],
+                    body: airtimeData,
+                    startY: yPos,
+                    theme: 'grid',
+                    headStyles: { fillColor: [52, 152, 219] } // Blue header
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+
+                // Add Electricity Commission table
+                doc.autoTable({
+                    head: [['Electricity Commission', 'Rate']],
+                    body: electricityData,
+                    startY: yPos,
+                    theme: 'grid',
+                    headStyles: { fillColor: [46, 204, 113] } // Green header
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+
+                // Add Collections Commission table
+                doc.autoTable({
+                    head: [['Collections Commission', 'Rate']],
+                    body: collectionsData,
+                    startY: yPos,
+                    theme: 'grid',
+                    headStyles: { fillColor: [231, 76, 60] } // Red header
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+
+                // Add Bill Payments table
+                doc.autoTable({
+                    head: [['Bill Payments', 'Rate']],
+                    body: billPaymentsData,
+                    startY: yPos,
+                    theme: 'grid',
+                    headStyles: { fillColor: [243, 156, 18] } // Orange header
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+
+                // Add Agreement Counts table
+                doc.autoTable({
+                    head: [['Agreement Type', 'Count']],
+                    body: agreementData,
+                    startY: yPos,
+                    theme: 'grid',
+                    headStyles: { fillColor: [149, 165, 166] } // Gray header
+                });
+
+                // Save the PDF
+                doc.save(`Commission_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+            }
+
+        });
+
+        // Upload button functionality
+        document.querySelectorAll('.upload-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Create a file input element
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.style.display = 'none';
+
+                // Determine which type of document we're uploading based on the card title
+                const cardTitle = this.closest('.agreement-card').querySelector('h3').textContent;
+
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        //Handling the file upload
+                        //Using AJAX to send it to the server
+                        alert(`Uploading ${this.files[0].name} for ${cardTitle}`);
+
+                        // You would typically have an AJAX call here like:
+
+                        const formData = new FormData();
+                        formData.append('file', this.files[0]);
+                        formData.append('type', cardTitle);
+
+                        fetch('/upload-endpoint', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Handle successful upload
+                            console.log('Upload successful:', data);
+                        })
+                        .catch(error => {
+                            // Handle error
+                            console.error('Upload error:', error);
+                        });
+
+                    }
+                });
+
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            });
+        });
+    </script>
+{% endblock %}
