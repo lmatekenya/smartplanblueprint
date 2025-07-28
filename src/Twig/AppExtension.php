@@ -4,6 +4,7 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
@@ -34,5 +35,21 @@ class AppExtension extends AbstractExtension
         ];
 
         return $routes[$reportName] ?? 'app_reports';
+    }
+
+    public function getFilters()
+    {
+        return [
+            new TwigFilter('format_bwp', [$this, 'formatCurrency']),
+        ];
+    }
+
+    public function formatCurrency($amount): string
+    {
+        if (null === $amount) {
+            return 'N/A';
+        }
+
+        return 'P' . number_format((float) $amount, 2, '.', ',');
     }
 }

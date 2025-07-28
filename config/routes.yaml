@@ -31,16 +31,51 @@ portal_users:
     controller: App\Controller\PortalUser\PortalUserController::portalUsers
     methods: GET
 
+add_user:
+    path: /merchant/portal_users/{id}
+    controller: App\Controller\UserController:addUser
+    methods: POST
+
+view_user:
+    path: /merchant/{id}/user/{userId}
+    controller: App\Controller\UserController::view
+    methods: GET
+
+edit_user:
+    path: /merchant/{id}/user/{userId}
+    controller: App\Controller\UserController::edit
+    methods: [GET, POST]
+
+delete_user:
+    path: /merchant/{id}/user/{userId}
+    controller: App\Controller\UserController:delete
+    methods: POST
+
 outlets:
     path: /outlets/{id}
     controller: App\Controller\PortalUser\OutletController:outlets
     methods: GET
 
 #Navigate through Financials
-app_financials:
-        path: /financials
-        controller: App\Controller\FinancialsController::show_financials
-        methods: GET
+#app_financials:
+#        path: /financials
+#        controller: App\Controller\FinancialsController::show_financials
+#        methods: GET
+
+sales_financials:
+    path: merchant/financials/{id}/sales
+    controller: App\Controller\Financials\SalesController::sales
+    methods: GET
+
+commission_financials:
+    path: merchant/financials/{id}/commission
+    controller: App\Controller\Financials\CommissionController::commission
+    methods: GET
+
+#earned_commission:
+#    path: /merchant/financials/{id}/commission/earned
+#    controller: App\Controller\Financials\CommissionController::earnedCommission
+#    methods: GET
 
 #Navigate through Limits and Documents
 app_limits_and_docs:

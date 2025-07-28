@@ -5,6 +5,7 @@ namespace App\Controller\PortalUser;
 use App\Entity\Merchant;
 use App\Repository\Merchant\PortalUserRepository;
 use App\Repository\MerchantRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
