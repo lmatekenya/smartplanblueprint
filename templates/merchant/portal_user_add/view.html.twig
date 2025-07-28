@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View User - {{ user.name }}{% endblock %}
+
+{% block body %}
+    <div class="merchant-container">
+        <div class="merchant-header">
+            <div class="header-content">
+                <h2 class="merchant-title">USER DETAILS</h2>
+                <div class="merchant-name">Merchant: <strong>{{ merchant.name }}</strong></div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <table class="info-table">
+                <tr>
+                    <th>Name</th>
+                    <td>{{ user.name }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <th>Roles</th>
+                    <td>{{ user.roles|join(', ') }}</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>{{ user.enabled ? 'Active' : 'Inactive' }}</td>
+                </tr>
+                <tr>
+                    <th>Date Created</th>
+                    <td>{{ user.date_created|date('Y-m-d H:i') }}</td>
+                </tr>
+            </table>
+
+            <div class="action-btns" style="margin-top: 20px;">
+                <a href="{{ path('edit_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-edit">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="action-btn btn-view">
+                    <i class="fas fa-arrow-left"></i> Back to Users
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

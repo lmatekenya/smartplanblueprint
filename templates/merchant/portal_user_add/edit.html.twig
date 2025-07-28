@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User - {{ user.name }}{% endblock %}
+
+{% block body %}
+    <div class="merchant-container">
+        <div class="merchant-header">
+            <div class="header-content">
+                <h2 class="merchant-title">EDIT USER</h2>
+                <div class="merchant-name">Merchant: <strong>{{ merchant.name }}</strong></div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+
+            <div class="modal-footer" style="padding: 0; margin-top: 20px;">
+                <button type="submit" class="action-btn btn-edit">Save Changes</button>
+                <a href="{{ path('view_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-view">Cancel</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
