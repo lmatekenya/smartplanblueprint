@@ -4,6 +4,7 @@ namespace App\Repository\Financials;
 
 
 use App\Entity\Financials\Sales;
+use App\Entity\Merchant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,22 +29,24 @@ class FinancialsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function findGroupedByTypeAndProvider(int $merchantId): array
+
+    public function getTotalByTypeForMerchant(Merchant $merchant, string $type, \DateTimeInterface $start, \DateTimeInterface $end): string
     {
-        return $this->createQueryBuilder('c')
-            ->select(
-                'c.commissionType as Type',
-                'c.provider as Provider',
-                'SUM(c.totalSales) as Sales',
-                'SUM(c.merchantCommission) as Merchant'
-            )
-            ->where('c.merchant = :merchantId')
-            ->setParameter('merchantId', $merchantId)
-            ->groupBy('c.commissionType', 'c.provider')
-            ->orderBy('c.commissionType', 'ASC')
+        $result = $this->createQueryBuilder('s')
+            ->select('SUM(s.total)')
+            ->where('s.merchant = :merchant')
+            ->andWhere('s.saleType = :type')
+            ->andWhere('s.saleDate BETWEEN :start AND :end')
+            ->setParameter('merchant', $merchant)
+            ->setParameter('type', $type)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
             ->getQuery()
-            ->getResult();
+            ->getSingleScalarResult();
+
+        return $result ?: '0.00';
     }
+
     public function findDepositsByMerchant(int $merchantId): float
     {
         $result = $this->createQueryBuilder('s')

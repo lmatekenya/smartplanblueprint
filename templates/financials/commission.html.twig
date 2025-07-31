@@ -6,9 +6,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_financials') }}" style="color: #7f8c8d;" class="breadcrumb-link">Financials</a>
+        <a href="{{ path('app_financials', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Financials</a>
         <span class="breadcrumb-separator">/</span>
-        <a href="{{ path('financials_commission') }}" style="color: #7f8c8d;" class="breadcrumb-link">Commission</a>
+        <a href="{{ path('financials_commission', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Commission</a>
     </div>
 {% endblock %}
 
@@ -108,15 +108,15 @@
                     </div>
                     <div id="date-range" style="display: flex; gap: 10px;">
 
-                        <a href="{{ path('app_financials', {'id': merchant.id, 'range': 'today'}) }}"
+                        <a href="{{ path('financials_commission', {'id': merchant.id, 'range': 'today'}) }}"
                            style="padding: 8px 15px; {{ dateRange.currentRange == 'today' ? 'background-color: var(--secondary); color: white;' : 'background-color: var(--light);' }} border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center;">
                             Today
                         </a>
-                        <a href="{{ path('app_financials', {'id': merchant.id, 'range': 'week'}) }}"
+                        <a href="{{ path('financials_commission', {'id': merchant.id, 'range': 'week'}) }}"
                            style="padding: 8px 15px; {{ dateRange.currentRange == 'week' ? 'background-color: var(--secondary); color: white;' : 'background-color: var(--light);' }} border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center;">
                             Last 7 Days
                         </a>
-                        <a href="{{ path('app_financials', {'id': merchant.id, 'range': 'month'}) }}"
+                        <a href="{{ path('financials_commission', {'id': merchant.id, 'range': 'month'}) }}"
                            style="padding: 8px 15px; {{ dateRange.currentRange == 'month' ? 'background-color: var(--secondary); color: white;' : 'background-color: var(--light);' }} border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center;">
                             Month to Date
                         </a>
@@ -143,10 +143,9 @@
 
                 <div class="dashboard-card metric-card closing">
                     <div style="color: var(--gray); font-size: 14px;">REVERSALS FOR PERIOD</div>
-                    <div style="font-size: 24px; font-weight: bold; color: var(--dark);">P0.00</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--dark);">P{{ metricTotals.reversals|number_format(2) }}</div>
                 </div>
             </div>
-
 
             <!-- Financials -->
             <div class="dashboard-card">
@@ -168,12 +167,12 @@
                 <div class="dashboard-card">
 
                     <div class="info-card">
-                    <h3 style="margin-top: 0; color: var(--primary);">Commission</h3>
+                    <h3 style="margin-top: 0; color: var(--primary);">Commission (Credited)</h3>
 
                     <div class="breadcrumb-item">
-                        <a href="{{ path('financials_commission') }}" style="color: #7f8c8d;" class="breadcrumb-link">Credited</a>
+                        <a href="{{ path('financials_commission', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Credited</a>
                         <span class="breadcrumb-separator">/</span>
-                        <a href="{{ path('financials_earned_commission') }}" style="color: #7f8c8d;" class="breadcrumb-link">Earned</a>
+                        <a href="{{ path('financials_earned_commission', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Earned</a>
                     </div>
                     </div>
 
@@ -189,17 +188,16 @@
                         </tr>
                         </thead>
                         <tbody>
-
                         {% for comm in commission %}
                             <tr>
-                                <td>{{ comm['Type'] }}</td>
-                                <td>{{ comm['Provider'] }}</td>
-                                <td>{{ comm['Sales']| format_bwp }}</td>
-                                <td>{{ comm['Merchant']| format_bwp }}</td>
+                                <td>{{ comm.Type }}</td>
+                                <td>{{ comm.Provider }}</td>
+                                <td>P{{ comm.Sales|number_format(2) }}</td>
+                                <td>P{{ comm.Merchant|number_format(2) }}</td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="3">No commission found</td>
+                                <td colspan="4" style="text-align: center;">No commission found for this period</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -214,55 +212,55 @@
         {{ parent() }}
 
         <script>
-            function setDateRange(range) {
-                const today = new Date();
-                let startDate, endDate;
-
-                switch(range) {
-                    case 'today':
-                        startDate = new Date(today);
-                        endDate = new Date(today);
-                        break;
-                    case 'week':
-                        startDate = new Date(today);
-                        startDate.setDate(today.getDate() - 6); // Last 7 days (including today)
-                        endDate = new Date(today);
-                        break;
-                    case 'month':
-                        startDate = new Date(today.getFullYear(), today.getMonth(), 1); // First day of current month
-                        endDate = new Date(today);
-                        break;
-                }
-
-                // Format dates for display
-                const formattedStart = formatDate(startDate);
-                const formattedEnd = formatDate(endDate);
-
-                // Update the display
-                document.getElementById('dateRangeDisplay').textContent =
-                    formattedStart === formattedEnd
-                        ? formattedStart
-                        : `${formattedStart} - ${formattedEnd}`;
-
-            }
-
-            function formatDate(date) {
-                const options = {
-                    month: 'long',
-                    day: 'numeric',
-                    year: date.getMonth() !== new Date().getMonth() ? 'numeric' : undefined
-                };
-
-                let formatted = date.toLocaleDateString('en-US', options);
-
-                // Add ordinal suffix (1st, 2nd, 3rd, 4th)
-                const day = date.getDate();
-                const suffix = (day % 10 === 1 && day !== 11) ? 'st' :
-                    (day % 10 === 2 && day !== 12) ? 'nd' :
-                        (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
-
-                return formatted.replace(/(\d+)/, `$1${suffix}`);
-            }
+            // function setDateRange(range) {
+            //     const today = new Date();
+            //     let startDate, endDate;
+            //
+            //     switch(range) {
+            //         case 'today':
+            //             startDate = new Date(today);
+            //             endDate = new Date(today);
+            //             break;
+            //         case 'week':
+            //             startDate = new Date(today);
+            //             startDate.setDate(today.getDate() - 6); // Last 7 days (including today)
+            //             endDate = new Date(today);
+            //             break;
+            //         case 'month':
+            //             startDate = new Date(today.getFullYear(), today.getMonth(), 1); // First day of current month
+            //             endDate = new Date(today);
+            //             break;
+            //     }
+            //
+            //     // Format dates for display
+            //     const formattedStart = formatDate(startDate);
+            //     const formattedEnd = formatDate(endDate);
+            //
+            //     // Update the display
+            //     document.getElementById('dateRangeDisplay').textContent =
+            //         formattedStart === formattedEnd
+            //             ? formattedStart
+            //             : `${formattedStart} - ${formattedEnd}`;
+            //
+            // }
+            //
+            // function formatDate(date) {
+            //     const options = {
+            //         month: 'long',
+            //         day: 'numeric',
+            //         year: date.getMonth() !== new Date().getMonth() ? 'numeric' : undefined
+            //     };
+            //
+            //     let formatted = date.toLocaleDateString('en-US', options);
+            //
+            //     // Add ordinal suffix (1st, 2nd, 3rd, 4th)
+            //     const day = date.getDate();
+            //     const suffix = (day % 10 === 1 && day !== 11) ? 'st' :
+            //         (day % 10 === 2 && day !== 12) ? 'nd' :
+            //             (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
+            //
+            //     return formatted.replace(/(\d+)/, `$1${suffix}`);
+            // }
 
             // Initialize with today's date
             document.addEventListener('DOMContentLoaded', function() {

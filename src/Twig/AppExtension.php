@@ -40,6 +40,7 @@ class AppExtension extends AbstractExtension
     public function getFilters()
     {
         return [
+            new TwigFilter('format_percent', [$this, 'formatPercent']),
             new TwigFilter('format_bwp', [$this, 'formatCurrency']),
         ];
     }
@@ -52,4 +53,40 @@ class AppExtension extends AbstractExtension
 
         return 'P' . number_format((float) $amount, 2, '.', ',');
     }
+
+//    public function formatPercent(float $value): string
+//    {
+//        // Format as percentage (e.g., 0.09 → "9%")
+//        return round($value * 100, 2) . '%';
+//    }
+
+    public function formatPercent($value): string
+    {
+        // Convert to float if it's a string
+        $numericValue = is_numeric($value) ? (float)$value : 0.0;
+
+        // Detect if value is likely stored as decimal (0.09) or whole number (9)
+        if ($numericValue < 1) {
+            // Value is in decimal format (0.09 → 9%)
+            $percentage = round($numericValue * 100, 2);
+        } else {
+            // Value is already in percentage format (9 → 9%)
+            $percentage = round($numericValue, 2);
+        }
+
+        // Format with 2 decimal places and % sign
+        return number_format($percentage, 2) . '%';
+    }
+
+    public function formatBWP($value): string
+    {
+        $numericValue = is_numeric($value) ? (float)$value : 0.0;
+        return 'P' . number_format($numericValue, 2);
+    }
+
+//    public function formatBWP(float $value): string
+//    {
+//        // Format as currency (e.g., 1000 → "P1,000.00")
+//        return 'P' . number_format($value, 2);
+//    }
 }

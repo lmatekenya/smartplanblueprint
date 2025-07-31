@@ -63,13 +63,33 @@ outlets:
 #        methods: GET
 
 sales_financials:
-    path: merchant/financials/{id}/sales
+    path: /merchant/financials/{id}/sales
     controller: App\Controller\Financials\SalesController::sales
     methods: GET
 
 commission_financials:
-    path: merchant/financials/{id}/commission
+    path: /merchant/financials/{id}/commission
     controller: App\Controller\Financials\CommissionController::commission
+    methods: GET
+
+earned_commission_financials:
+    path: /merchant/financials/{id}/commission/earned
+    controller: App\Controller\Financials\CommissionController::earnedCommission
+    methods: GET
+
+deposits_financials:
+    path: /merchant/financials/{id}/deposits
+    controller: App\Controller\Financials\DepositsController::deposits
+    methods: GET
+
+reversals_financials:
+    path: /merchant/financials/{id}/reversals
+    controller: App\Controller\Financials\ReversalsController::reversals
+    methods: GET
+
+summary_financials:
+    path: /merchant/financials/{id}/summary
+    controller: App\Controller\Financials\SummaryController::summary
     methods: GET
 
 #earned_commission:
@@ -90,7 +110,6 @@ merchant_commissions:
 reports:
     path: /reports
     controller: App\Controller\Reports\ReportsController::reports
-
 
 #merchant_details:
 #    path: /merchant/details/{id}

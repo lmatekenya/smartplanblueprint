@@ -3,7 +3,7 @@
 // src/Entity/Merchant.php
 namespace App\Entity;
 
-
+use App\Entity\Financials\Reversals;
 use App\Entity\Merchant\MerchantDetails;
 use App\Entity\Merchant\OutletDetails;
 use App\Entity\Merchant\PortalUserDetails;
@@ -30,6 +30,8 @@ class Merchant
 
     #[ORM\OneToMany(targetEntity: OutletDetails::class, mappedBy: 'merchant', cascade: ['persist', 'remove'])]
     private Collection $outletDetails;
+    #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: Reversals::class)]
+    private Collection $reversals;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -58,6 +60,8 @@ class Merchant
         $this->details = new MerchantDetails();
         $this->portalUsers = new ArrayCollection();
         $this->outletDetails = new ArrayCollection();
+        $this->reversals = new ArrayCollection();
+//        $this->registrationDate = new \DateTime();
     }
 
     /**
@@ -203,6 +207,10 @@ class Merchant
         return $this->outletDetails;
     }
 
+    public function getReversals(): Collection
+    {
+        return $this->reversals;
+    }
     public function addPortalUser(PortalUserDetails $portalUser): self
     {
         if (!$this->portalUsers->contains($portalUser)) {

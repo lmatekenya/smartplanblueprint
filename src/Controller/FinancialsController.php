@@ -80,23 +80,23 @@ class FinancialsController extends AbstractController
 //        return $this->render('financials/commission.html.twig');
 //    }
 
-    #[Route('/earned_commission', name: 'financials_earned_commission')]
-    public function earned_commission(): Response
-    {
-        return $this->render('financials/earned_commission.html.twig');
-    }
+//    #[Route('/earned_commission', name: 'financials_earned_commission')]
+//    public function earned_commission(): Response
+//    {
+//        return $this->render('financials/earned_commission.html.twig');
+//    }
 
-    #[Route('/deposits', name: 'financials_deposits')]
-    public function deposits(): Response
-    {
-        return $this->render('financials/deposits.html.twig');
-    }
+//    #[Route('/deposits', name: 'financials_deposits')]
+//    public function deposits(): Response
+//    {
+//        return $this->render('financials/deposits.html.twig');
+//    }
 
-    #[Route('/reversals', name: 'financials_reversals')]
-    public function reversals(): Response
-    {
-        return $this->render('financials/reversals.html.twig');
-    }
+//    #[Route('/reversals', name: 'financials_reversals')]
+//    public function reversals(): Response
+//    {
+//        return $this->render('financials/reversals.html.twig');
+//    }
 
     #[Route('/withdrawals', name: 'financials_withdrawals')]
     public function withdrawals(): Response

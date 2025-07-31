@@ -6,7 +6,6 @@
 
 {% block breadcrumb %}Financials / Sales{% endblock %}
 
-
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -152,10 +151,9 @@
 
                 <div class="dashboard-card metric-card closing">
                     <div style="color: var(--gray); font-size: 14px;">REVERSALS FOR PERIOD</div>
-                    <div style="font-size: 24px; font-weight: bold; color: var(--dark);">P0.00</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--dark);">P{{ metricTotals.reversals|number_format(2) }}</div>
                 </div>
             </div>
-
 
             <!-- Financials -->
             <div class="dashboard-card">
@@ -163,13 +161,13 @@
                 <div class="action-dropdown">
                     <select class="action-select" id="actionSelect" onchange="handleFilterChange(this)">
                         <option value="">Filter By</option>
-                        <option value="{{ path('app_financials', {'id': merchant.id}) }}" selected>Sales</option>
-                        <option value="{{ path('financials_commission', {'id': merchant.id}) }}">Commission</option>
-                        <option value="{{ path('financials_deposits', {'id': merchant.id}) }}">Deposits</option>
-                        <option value="{{ path('financials_reversals', {'id': merchant.id}) }}">Reversals</option>
-                        <option value="{{ path('financials_withdrawals', {'id': merchant.id}) }}">Withdrawals</option>
-                        <option value="{{ path('financials_transfers', {'id': merchant.id}) }}">Transfers</option>
-                        <option value="{{ path('financials_summary', {'id': merchant.id}) }}">Summary</option>
+                        <option value="{{ path('app_financials', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'app_financials' ? 'selected' : '' }}>Sales</option>
+                        <option value="{{ path('financials_commission', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_commission' ? 'selected' : '' }}>Commission</option>
+                        <option value="{{ path('financials_deposits', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_deposits' ? 'selected' : '' }}>Deposits</option>
+                        <option value="{{ path('financials_reversals', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_reversals' ? 'selected' : '' }}>Reversals</option>
+                        <option value="{{ path('financials_withdrawals', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_withdrawals' ? 'selected' : '' }}>Withdrawals</option>
+                        <option value="{{ path('financials_transfers', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_transfers' ? 'selected' : '' }}>Transfers</option>
+                        <option value="{{ path('financials_summary', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_summary' ? 'selected' : '' }}>Summary</option>
                     </select>
                 </div>
 
@@ -211,16 +209,20 @@
         {{ parent() }}
 
         <script>
-
+            function handleFilterChange(selectElement) {
+                if (selectElement.value) {
+                    window.location.href = selectElement.value;
+                }
+            }
             // Initialize with today's date
             document.addEventListener('DOMContentLoaded', function() {
                 setDateRange('today');
+            });
 
-                document.getElementById('actionSelect').addEventListener('change', function() {
-                    if (this.value) {
-                        window.location.href = this.value;
-                    }
-                });
+            document.getElementById('actionSelect').addEventListener('change', function() {
+                if (this.value) {
+                    window.location.href = this.value;
+                }
             });
         </script>
 
