@@ -1,5 +1,5 @@
 <?php
-//// src/Entity/Transaction.php
+//// src/Entity/ReportsTransaction.php
 //namespace App\Entity;
 //
 //use Doctrine\ORM\Mapping as ORM;
@@ -98,7 +98,7 @@
 //    // ... other getters/setters
 //}
 
-// src/Entity/Transaction.php
+// src/Entity/ReportsTransaction.php
 namespace App\Entity;
 
 use App\Repository\TransactionRepository;

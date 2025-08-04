@@ -163,10 +163,28 @@
        {% if not (merchant is defined and merchant.id) %}title="Select a merchant first"{% endif %}>
         <i class="fas fa-chart-line"></i> Financials
     </a>
-    <a href="{{ path('app_limits_and_docs') }}" class="sidebar-item {{ app.request.get('_route') starts with 'app_limits_and_docs' ? 'active' : '' }}">
+{#    <a href="{{ path('app_limits_and_docs') }}" class="sidebar-item {{ app.request.get('_route') starts with 'app_limits_and_docs' ? 'active' : '' }}">#}
+{#        <i class="fas fa-file-clipboard"></i> Limits & Documents#}
+{#    </a>#}
+
+    <a href="{% if merchant is defined and merchant.id %}{{ path('app_limits_and_docs', {'id': merchant.id}) }}{% else %}#{% endif %}"
+       class="sidebar-item {{ app.request.get('_route') starts with 'app_limits_and_docs' ? 'active' : '' }}"
+       {% if not (merchant is defined and merchant.id) %}title="Select a merchant first"{% endif %}>
         <i class="fas fa-file-clipboard"></i> Limits & Documents
     </a>
-    <a href="{{ path('app_reports') }}" class="sidebar-item {{ app.request.get('_route') == 'app_reports' ? 'active' : '' }}">
+{#    <a href="{{ path('app_reports') }}" class="sidebar-item {{ app.request.get('_route') == 'app_reports' ? 'active' : '' }}">#}
+{#        <i class="fas fa-file-alt"></i> Reports#}
+{#    </a>#}
+
+{#    <a href="{% if merchant is defined and merchant.id %}{{ path('app_reports', {'id': merchant.id}) }}{% else %}#{% endif %}"#}
+{#       class="sidebar-item {{ app.request.get('_route') starts with 'app_reports' ? 'active' : '' }}"#}
+{#       {% if not (merchant is defined and merchant.id) %}title="Select a merchant first"{% endif %}>#}
+{#        <i class="fas fa-file-alt"></i> Reports#}
+{#    </a>#}
+
+    <a href="{% if merchant is defined and merchant.id %}{{ path('app_reports', {'outletId': merchant.id}) }}{% else %}#{% endif %}"
+       class="sidebar-item {{ app.request.get('_route') starts with 'app_reports' ? 'active' : '' }}"
+       {% if not (merchant is defined and merchant.id) %}title="Select a merchant first"{% endif %}>
         <i class="fas fa-file-alt"></i> Reports
     </a>
     <a href="{{  path('app_logout') }}" class="sidebar-item">

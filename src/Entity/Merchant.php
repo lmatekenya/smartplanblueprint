@@ -4,6 +4,8 @@
 namespace App\Entity;
 
 use App\Entity\Financials\Reversals;
+use App\Entity\LimitsAndDocs\CreditLimit;
+use App\Entity\LimitsAndDocs\Provider;
 use App\Entity\Merchant\MerchantDetails;
 use App\Entity\Merchant\OutletDetails;
 use App\Entity\Merchant\PortalUserDetails;
@@ -33,6 +35,12 @@ class Merchant
     #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: Reversals::class)]
     private Collection $reversals;
 
+    #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: CreditLimit::class, cascade: ['persist', 'remove'])]
+    private Collection $creditLimits;
+
+    #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: Provider::class, cascade: ['persist', 'remove'])]
+    private Collection $providers;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -53,6 +61,16 @@ class Merchant
     #[ORM\Column(type: 'string', length: 50)]
     private $clientId;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Commission", mappedBy="merchant")
+     */
+    private $agreementCommissions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Agreement", mappedBy="merchant")
+     */
+    private $agreements;
+
     // Getters and setters...
     public function __construct()
     {
@@ -61,8 +79,33 @@ class Merchant
         $this->portalUsers = new ArrayCollection();
         $this->outletDetails = new ArrayCollection();
         $this->reversals = new ArrayCollection();
-//        $this->registrationDate = new \DateTime();
+        $this->creditLimits = new ArrayCollection();
+        $this->providers = new ArrayCollection();
+        $this->agreementCommissions = new ArrayCollection();
+        $this->agreements = new ArrayCollection();
+
     }
+
+    public function getAgreementCommissions(): ArrayCollection
+    {
+        return $this->agreementCommissions;
+    }
+
+    public function setAgreementCommissions(ArrayCollection $agreementCommissions): void
+    {
+        $this->agreementCommissions = $agreementCommissions;
+    }
+
+    public function getAgreements(): ArrayCollection
+    {
+        return $this->agreements;
+    }
+
+    public function setAgreements(ArrayCollection $agreements): void
+    {
+        $this->agreements = $agreements;
+    }
+
 
     /**
      * @return mixed
@@ -225,6 +268,65 @@ class Merchant
         if ($this->portalUsers->removeElement($portalUser)) {
             if ($portalUser->getMerchant() === $this) {
                 $portalUser->setMerchant(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CreditLimit>
+     */
+    public function getCreditLimits(): Collection
+    {
+        return $this->creditLimits;
+    }
+
+    public function addCreditLimit(CreditLimit $creditLimit): static
+    {
+        if (!$this->creditLimits->contains($creditLimit)) {
+            $this->creditLimits->add($creditLimit);
+            $creditLimit->setMerchant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreditLimit(CreditLimit $creditLimit): static
+    {
+        if ($this->creditLimits->removeElement($creditLimit)) {
+            // set the owning side to null (unless already changed)
+            if ($creditLimit->getMerchant() === $this) {
+                $creditLimit->setMerchant(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Provider>
+     */
+    public function getProviders(): Collection
+    {
+        return $this->providers;
+    }
+
+    public function addProvider(Provider $provider): static
+    {
+        if (!$this->providers->contains($provider)) {
+            $this->providers->add($provider);
+            $provider->setMerchant($this);
+        }
+        return $this;
+    }
+
+    public function removeProvider(Provider $provider): static
+    {
+        if ($this->providers->removeElement($provider)) {
+            // set the owning side to null (unless already changed)
+            if ($provider->getMerchant() === $this) {
+                $provider->setMerchant(null);
             }
         }
         return $this;

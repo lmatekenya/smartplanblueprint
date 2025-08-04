@@ -6,9 +6,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
+        <a href="{{ path('app_limits_and_docs', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
         <span class="breadcrumb-separator">/</span>
-        <a href="{{ path('merchant_commissions') }}" style="color: #7f8c8d;" class="breadcrumb-link">Merchant-Agreement</a>
+        <a href="{{ path('merchant_commissions', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Merchant-Agreement</a>
     </div>
 {% endblock %}
 
@@ -344,7 +344,7 @@
                     {% for commission in collectionsCommissions %}
                         <div class="commission-item">
                             <span class="service-name">{{ commission.service }}</span>
-                            <span class="commission-rate">P{{ commission.rate }}</span>
+                            <span class="commission-rate">{{ commission.rate }}</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -360,7 +360,7 @@
                     {% for commission in billPayments %}
                         <div class="commission-item">
                             <span class="service-name">{{ commission.service }}</span>
-                            <span class="commission-rate">P{{ commission.rate }}</span>
+                            <span class="commission-rate">{{ commission.rate }}</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -374,7 +374,7 @@
                     <h3>Agreement View</h3>
                     <div class="agreement-item">
                         <span>Active Services</span>
-{#                        <span class="count">{{ agreementCounts.view }}</span>#}
+                        <span class="count">{{ agreementCounts.view }}</span>
                         <button class="view-btn" title="View">
                             <i class="fas fa-street-view"></i>
                         </button>
@@ -388,7 +388,7 @@
                     <h3>Omang / Registration</h3>
                     <div class="agreement-item">
                         <span>Active Services</span>
-{#                        <span class="count">{{ agreementCounts.registration }}</span>#}
+                        <span class="count">{{ agreementCounts.registration }}</span>
                         <button class="upload-btn" title="Upload document">
                             <i class="fas fa-upload"></i>
                         </button>
@@ -399,7 +399,7 @@
                     <h3>Affidavit / Other</h3>
                     <div class="agreement-item">
                         <span>Active Services</span>
-{#                        <span class="count">{{ agreementCounts.affidavit }}</span>#}
+                        <span class="count">{{ agreementCounts.affidavit }}</span>
                         <button class="upload-btn" title="Upload document">
                             <i class="fas fa-upload"></i>
                         </button>
@@ -691,7 +691,7 @@
                 doc.save(`Commission_Report_${new Date().toISOString().slice(0,10)}.pdf`);
             }
 
-        });
+
 
         // Upload button functionality
         document.querySelectorAll('.upload-btn').forEach(button => {
@@ -737,6 +737,7 @@
                 fileInput.click();
                 document.body.removeChild(fileInput);
             });
+        });
         });
     </script>
 {% endblock %}

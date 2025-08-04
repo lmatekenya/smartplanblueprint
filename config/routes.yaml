@@ -98,18 +98,56 @@ summary_financials:
 #    methods: GET
 
 #Navigate through Limits and Documents
+#app_limits_and_docs:
+#    path: /limits
+#    controller: App\Controller\LimitsAndDocsController::show_limits_and_documents
+#    methods: GET
+
 app_limits_and_docs:
-    path: /limits
-    controller: App\Controller\LimitsAndDocsController::show_limits_and_documents
+    path: /merchant/limits-and-docs/{id}
+    controller: App\Controller\LimitsAndDocs\CreditLimitController::creditLimit
     methods: GET
 
+app_limits_and_docs_edit:
+    path: /limits-and-docs/{id}/edit
+    controller: App\Controller\LimitsAndDocs\CreditLimitController::edit
+    methods: [GET, POST]
+
+app_limits_and_docs_remove:
+    path: /merchant/limits-and-docs/{id}/remove
+    controller: App\Controller\LimitsAndDocs\CreditLimitController::remove
+    methods: [GET, POST]
+
+
+app_limits_and_docs_providers:
+    path: /merchant/providers/{id}
+    controller: App\Controller\LimitsAndDocs\ProviderController::provider
+    methods: GET
+
+app_limits_and_docs_providers_edit:
+    path: /merchant/providers/{id}/edit
+    controller: App\Controller\LimitsAndDocs\ProviderController::edit_provider
+    methods: [GET, POST]
+
+app_limits_and_docs_providers_remove:
+    path: /merchant/providers/{id}/delete/{providerId}
+    controller: App\Controller\LimitsAndDocs\ProviderController::delete_provider
+    methods: [GET, POST]
+
 merchant_commissions:
-        path: /merchant/commissions
-        controller: App\Controller\LimitsAndDocsController::commissions
+    path: /merchant/commissions/{id}
+    controller: App\Controller\LimitsAndDocs\MerchantAgreementController::commissions
+    methods: GET
 
 reports:
-    path: /reports
+    path: /reports/{outletId}
     controller: App\Controller\Reports\ReportsController::reports
+    methods: GET
+
+report_outlet_transaction:
+    path: /merchant/outlet/{outletId}/transactions
+    controller: App\Controller\Reports\Outlet\TransactionsController::index
+    methods: GET
 
 #merchant_details:
 #    path: /merchant/details/{id}

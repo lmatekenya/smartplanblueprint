@@ -163,7 +163,7 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"></span>
     </div>
 {% endblock %}
@@ -267,6 +267,40 @@
     </style>
 {% endblock %}
 
+{#{% block body %}#}
+{#    <div class="dashboard-card">#}
+{#        <h2>Reports</h2>#}
+
+{#        <div class="reports-container">#}
+{#            {% for category, reports in reportCategories %}#}
+{#                <div class="report-category">#}
+{#                    <h3>{{ category }}</h3>#}
+{#                    <div class="report-items">#}
+{#                        {% for report in reports %}#}
+{#                            <div class="report-item">#}
+{#                                <i class="fas fa-file-alt"></i>#}
+{#                                <div class="report-content">#}
+{#                                    <h4>{{ report }}</h4>#}
+{#                                    <div class="report-actions">#}
+{#                                        <button class="btn-generate">Generate Report</button>#}
+{#                                        <a href="{{ path(get_report_route(report)) }}" class="btn-view">#}
+{#                                            <i class="fas fa-eye"></i> View#}
+{#                                        </a>#}
+
+{#                                        <a href="{{ path(reportData.route, reportData.params) }}" class="btn-view">#}
+{#                                            <i class="fas fa-eye"></i> View#}
+{#                                        </a>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+
 {% block body %}
     <div class="dashboard-card">
         <h2>Reports</h2>
@@ -276,16 +310,22 @@
                 <div class="report-category">
                     <h3>{{ category }}</h3>
                     <div class="report-items">
-                        {% for report in reports %}
+                        {% for reportKey, reportData in reports %}
                             <div class="report-item">
                                 <i class="fas fa-file-alt"></i>
                                 <div class="report-content">
-                                    <h4>{{ report }}</h4>
+                                    <h4>{{ reportData.name }}</h4>
                                     <div class="report-actions">
                                         <button class="btn-generate">Generate Report</button>
-                                        <a href="{{ path(get_report_route(report)) }}" class="btn-view">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
+                                        {% if reportData.route is defined %}
+                                            <a href="{{ path(reportData.route, reportData.params) }}" class="btn-view">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        {% else %}
+                                            <span class="btn-view" style="opacity: 0.5; cursor: not-allowed;">
+                                                <i class="fas fa-eye-slash"></i> Coming Soon
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -296,8 +336,6 @@
         </div>
     </div>
 {% endblock %}
-
-
 
 {% block javascripts %}
     {{ parent() }}

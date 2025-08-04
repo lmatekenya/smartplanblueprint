@@ -28,7 +28,16 @@ class MerchantRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-
+    public function findOneByIdWithCreditLimits(int $id): ?Merchant
+    {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.creditLimits', 'cl')
+            ->addSelect('cl')
+            ->where('m.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
     /**
      * Find all merchants with their details
      */

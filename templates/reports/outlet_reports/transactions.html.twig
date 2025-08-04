@@ -7,9 +7,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"> / </span>
-        <a href="{{ path('app_transactions') }}" style="color: #7f8c8d;" class="breadcrumb-link">Transactions</a>
+        <a href="{{ path('app_transactions', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Transactions</a>
     </div>
 {% endblock %}
 
@@ -333,12 +333,26 @@
         </div>
 
         <div class="transactions-filters">
-            <form method="get" action="{{ path('app_transactions') }}">
+            <form method="get" action="{{ path('app_transactions', {'outletId': outletId}) }}">
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>
                         <input type="date" id="date" name="date" value="{{ dateFilter }}">
                     </div>
+
+                    <div style="display: none;">
+                        Debug: Date Filter = {{ dateFilter }}, Detail Filter = {{ detailFilter }}
+                    </div>
+
+{#                    <div class="filter-group">#}
+{#                        <label for="startDate"><i class="fas fa-calendar-alt"></i>Start Date</label>#}
+{#                        <input type="date" id="startDate" name="startDate" value="{{ startDateFilter }}">#}
+{#                    </div>#}
+{#                    <div class="filter-group">#}
+{#                        <label for="endDate"><i class="fas fa-calendar-alt"></i>End Date</label>#}
+{#                        <input type="date" id="endDate" name="endDate" value="{{ endDateFilter }}">#}
+{#                    </div>#}
+
                     <div class="filter-group">
                         <label for="detail"><i class="fas fa-search"></i> Filter by Detail</label>
                         <input type="text" id="detail" name="detail" placeholder="Enter transaction detail..." value="{{ detailFilter }}">
@@ -348,7 +362,7 @@
                     <button type="submit" class="btn-filter">
                         <i class="fas fa-filter"></i> Apply Filters
                     </button>
-                    <a href="{{ path('app_transactions') }}" class="btn-clear">
+                    <a href="{{ path('app_transactions', {'outletId': outletId}) }}" class="btn-clear">
                         <i class="fas fa-times"></i> Clear
                     </a>
                 </div>

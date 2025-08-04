@@ -6,7 +6,7 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
+        <a href="{{ path('app_limits_and_docs', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Limits&Docs</a>
     </div>
 {% endblock %}
 
@@ -85,13 +85,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
-
-
-
-
-
-
-
 
         .info-card {
             background-color: white;
@@ -179,6 +172,94 @@
             border-color: var(--success);
         }
 
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-expired {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .status-draft {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .action-link {
+            color: #7f8c8d;
+            text-decoration: none;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .edit-link:hover {
+            color: var(--primary);
+        }
+
+        .remove-link:hover {
+            color: var(--danger);
+        }
+
+        .action-separator {
+            color: #ddd;
+            margin: 0 8px;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .table-summary {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .add-button {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .add-button:hover {
+            background-color: var(--dashboard-primary-dark);
+        }
+
     </style>
 {% endblock %}
 
@@ -189,8 +270,8 @@
             <div class="dashboard-card">
                 <div class="credit-limit-header">
                     <div class="header-content">
-                        <h2 class="merchant-title">Smart Plan Blueprint</h2>
-                        <div class="merchant-id">Merchant ID: 3928</div>
+                        <h2 class="merchant-title">{{ merchant.name }}</h2>
+                        <div class="merchant-id">Merchant ID: {{ merchant.code }}</div>
                     </div>
 
                     <div class="header-actions">
@@ -210,12 +291,11 @@
                     <div class="action-dropdown">
                         <select class="action-select" id="actionSelect">
                             <option value="">Filter By</option>
-                            <option value="{{ path('app_limits_and_docs') }}">Credit Limit</option>
-                            <option value="{{ path('providers') }}">Providers</option>
-                            <option value="{{ path('merchant_commissions') }}">Merchant Agreement</option>
+                            <option value="{{ path('app_limits_and_docs', {'id': merchant.id}) }}">Credit Limit</option>
+                            <option value="{{ path('providers', {'id': merchant.id}) }}">Providers</option>
+                            <option value="{{ path('merchant_commissions', {'id': merchant.id }) }}">Merchant Agreement</option>
                         </select>
                     </div>
-
                     <!--Credit Limit-->
                     <div class="dashboard-card">
                         <h3 style="margin-top: 0; color: var(--primary);">Credit Limit</h3>
@@ -225,27 +305,73 @@
                             <thead>
                             <tr>
                                 <th>Date Approved</th>
-                                <th>Credit Amount</th>
-                                <th>Expity Date</th>
+                                <th>Credit Amount (BWP)</th>
+                                <th>Expiry Date</th>
                                 <th>Status</th>
                                 <th>Authorized By</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>2025-02-20</td>
-                                <td>10,000.00</td>
-                                <td>2026-04-30</td>
-                                <td>Approved</td>
-                                <td>Admin</td>
-                                <td>
-                                    <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d;">Edit</a> /
-                                    <a href="{{ path('app_limits_and_docs') }}" style="color: #7f8c8d">Remove</a>
-                                </td>
-                            </tr>
+                            {% if credit_limits|length > 0 %}
+                                {% for credit_limit in credit_limits %}
+                                    <tr>
+                                        <td>{{ credit_limit.dateApproved ? credit_limit.dateApproved|date('Y-m-d') : 'N/A' }}</td>
+                                        <td>
+                                            {% if filter_currency is defined %}
+                                                {{ credit_limit.amount|format_bwp }}
+                                            {% else %}
+                                                P{{ credit_limit.amount|number_format(2, '.', ',') }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ credit_limit.expiryDate ? credit_limit.expiryDate|date('Y-m-d') : 'N/A' }}</td>
+{#                                        <td>#}
+{#                                            <span class="status-badge status-{{ credit_limit.status|lower|default('pending') }}">#}
+{#                                                {{ credit_limit.status|default('Pending') }}#}
+{#                                            </span>#}
+{#                                        </td>#}
+                                        <td>
+                                            {% set status = credit_limit.status|default('Pending') %}
+                                            {% set status_class = 'status-' ~ status|lower %}
+                                            <span class="status-badge {{ status_class }}">{{ status }}</span>
+                                        </td>
+                                        <td>{{ credit_limit.authorizedBy|default('System') }}</td>
+                                        <td>
+                                            <a href="{{ path('app_limits_and_docs_edit', {'id': merchant.id, 'limitId': credit_limit.id}) }}"
+                                               class="action-link edit-link">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <span class="action-separator">/</span>
+                                            <a href="{{ path('app_limits_and_docs_remove', {'id': merchant.id, 'limitId': credit_limit.id}) }}"
+                                               class="action-link remove-link"
+                                               onclick="return confirm('Are you sure you want to remove this credit limit?');">
+                                                <i class="fas fa-trash-alt"></i> Remove
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="no-records">
+                                        <i class="fas fa-info-circle"></i> No credit limits found for this merchant
+                                    </td>
+                                </tr>
+                            {% endif %}
                             </tbody>
                         </table>
+
+                        {% if credit_limits|length > 0 %}
+                            <div class="table-footer">
+                                <div class="table-summary">
+                                    Total Credit:
+                                    {% if filter_currency is defined %}
+                                        {{ total_credit|format_bwp }}
+                                    {% else %}
+                                        P{{ total_credit|number_format(2, '.', ',') }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
