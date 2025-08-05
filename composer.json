@@ -10,12 +10,11 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-bcmath": "*",
+        "symfony/polyfill-ctype": "^1.27",
         "doctrine/dbal": "^3.10",
         "doctrine/doctrine-bundle": "^2.15.1",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.5.1",
-        "phpdocumentor/reflection-docblock": "^5.6.2",
-        "phpstan/phpdoc-parser": "^2.2",
         "symfony/asset": "7.3.*",
         "symfony/console": "7.3.*",
         "symfony/dotenv": "7.3.*",
@@ -77,15 +76,5 @@
             "symfony/runtime": true
         },
         "sort-packages": true
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "App\\Tests\\": "tests/"
-        }
     }
 }
