@@ -37,6 +37,7 @@ jobs:
     deploy:
         name: 🎉 Deploy Symfony to InfinityFree
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - name: 🚚 Checkout code
@@ -48,24 +49,46 @@ jobs:
                   php-version: '8.2'
                   extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
                   coverage: none
+                  ini-values: memory_limit=512M
+
+            - name: 🔄 Update Composer
+              run: composer self-update --2
 
             - name: 📦 Install production dependencies
               run: |
-                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+                  # First pass with --no-scripts to avoid cache:clear errors
+                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
+                  # Second pass to run only production-safe scripts
+                  composer run-script --no-dev post-install-cmd
                   composer dump-autoload --optimize --no-dev
 
-            - name: 🔧 Configure environment
+            - name: 🔧 Configure production environment
               run: |
+                  # Create fresh .env file
                   echo "APP_ENV=prod" > .env
                   echo "APP_DEBUG=0" >> .env
                   echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-#                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-                  # Remove debug configuration
-                  sed -i '/DebugBundle/d' config/bundles.php
+                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+
+                  # Clean up bundles.php if it exists
+                  if [ -f config/bundles.php ]; then
+                    sed -i '/DebugBundle/d' config/bundles.php
+                    sed -i '/WebProfilerBundle/d' config/bundles.php
+                  fi
+
+                  # Remove all dev and test configurations
+                  rm -rf config/packages/dev/
+                  rm -rf config/packages/test/
+                  find config/packages/ -name "*test.yaml" -delete
+
+            - name: 🛠️ Fix directory permissions
+              run: |
+                  mkdir -p var/cache/prod var/log
+                  chmod -R 755 var
+                  chmod -R 755 public
 
             - name: 🧹 Clear and warmup cache
               run: |
-                  rm -rf var/cache/*
                   php bin/console cache:clear --env=prod --no-debug
                   php bin/console cache:warmup --env=prod --no-debug
 
@@ -74,7 +97,9 @@ jobs:
                   rm -rf tests/
                   rm -rf .github/
                   rm -f .env.local .env.test .gitattributes .gitignore
-                  rm -f config/packages/dev/*.yaml config/packages/test/*.yaml
+                  find . -name "*.md" -delete
+                  find . -name "*.dist" -delete
+                  find . -name "*.patch" -delete
 
             - name: 📤 Deploy via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -94,3 +119,5 @@ jobs:
                       **/.env
                       composer.*
                       symfony.lock
+                      phpunit.*
+                      behat.yml
