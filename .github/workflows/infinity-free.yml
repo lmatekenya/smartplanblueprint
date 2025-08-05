@@ -1,11 +1,39 @@
+#name: 🚀 Deploy to smartplanblueprint.fwh.is
+#
+#on:
+#    workflow_dispatch: # Uncomment below to deploy on push instead
+#     push:
+#       branches:
+#         - main
+#         - smartplan
+#
+#jobs:
+#    deploy:
+#        name: 🎉 Deploy to smartplanblueprint.fwh.is
+#        runs-on: ubuntu-latest
+#
+#        steps:
+#            - name: 🚚 Get latest code
+#              uses: actions/checkout@v4
+#
+#            - name: 📂 Sync files via FTP
+#              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#              with:
+#                  server: ftpupload.net # Change if using another host
+#                  username: ${{ secrets.FTP_Username }}
+#                  password: ${{ secrets.FTP_Password }}
+#                  server-dir: smartplanblueprint.fwh.is/htdocs/ # Replace with your correct path
+#                  retries: 3
+#                  retryDelay: 10
+
 name: 🚀 Deploy to smartplanblueprint.fwh.is
 
 on:
-    workflow_dispatch: # Uncomment below to deploy on push instead
-     push:
-       branches:
-         - main
-         - smartplan
+    workflow_dispatch:
+        push:
+            branches:
+                - main
+                - smartplan
 
 jobs:
     deploy:
@@ -16,12 +44,41 @@ jobs:
             - name: 🚚 Get latest code
               uses: actions/checkout@v4
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
+                  coverage: none
+
+            - name: 📥 Install Dependencies
+              run: |
+                  composer install --no-dev --optimize-autoloader
+                  composer dump-autoload --optimize
+
+            - name: 🔨 Setup Environment
+              run: |
+                  echo "APP_ENV=prod" > .env
+                  echo "APP_DEBUG=0" >> .env
+                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+            - name: 🧹 Clear Cache
+              run: |
+                  rm -rf var/cache/*
+                  php bin/console cache:clear --env=prod
+                  php bin/console cache:warmup --env=prod
+
             - name: 📂 Sync files via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
-                  server: ftpupload.net # Change if using another host
+                  server: ftpupload.net
                   username: ${{ secrets.FTP_Username }}
                   password: ${{ secrets.FTP_Password }}
-                  server-dir: smartplanblueprint.fwh.is/htdocs/ # Replace with your correct path
+                  server-dir: smartplanblueprint.fwh.is/htdocs/
                   retries: 3
                   retryDelay: 10
+                  exclude: |
+                      **/.git*
+                      **/.git*/**
+                      **/node_modules/**
+                      tests/**
