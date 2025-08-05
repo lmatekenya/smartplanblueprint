@@ -1,123 +1,124 @@
-#name: 🚀 Deploy to smartplanblueprint.fwh.is
-#
-#on:
-#    workflow_dispatch: # Uncomment below to deploy on push instead
-#     push:
-#       branches:
-#         - main
-#         - smartplan
-#
-#jobs:
-#    deploy:
-#        name: 🎉 Deploy to smartplanblueprint.fwh.is
-#        runs-on: ubuntu-latest
-#
-#        steps:
-#            - name: 🚚 Get latest code
-#              uses: actions/checkout@v4
-#
-#            - name: 📂 Sync files via FTP
-#              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-#              with:
-#                  server: ftpupload.net # Change if using another host
-#                  username: ${{ secrets.FTP_Username }}
-#                  password: ${{ secrets.FTP_Password }}
-#                  server-dir: smartplanblueprint.fwh.is/htdocs/ # Replace with your correct path
-#                  retries: 3
-#                  retryDelay: 10
-
 name: 🚀 Deploy to smartplanblueprint.fwh.is
 
 on:
-    push:
-        branches: [ main, smartplan ]
-    workflow_dispatch:
+    workflow_dispatch: # Uncomment below to deploy on push instead
+     push:
+       branches:
+         - main
+         - smartplan
 
 jobs:
     deploy:
-        name: 🎉 Deploy Symfony to InfinityFree
+        name: 🎉 Deploy to smartplanblueprint.fwh.is
         runs-on: ubuntu-latest
-        timeout-minutes: 15
 
         steps:
-            - name: 🚚 Checkout code
+            - name: 🚚 Get latest code
               uses: actions/checkout@v4
 
-            - name: 🐘 Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: '8.2'
-                  extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
-                  coverage: none
-                  ini-values: memory_limit=512M
-
-            - name: 🔄 Update Composer
-              run: composer self-update --2
-
-            - name: 📦 Install production dependencies
-              run: |
-                  # Remove problematic extensions from requirements
-                  composer remove --no-update symfony/amphp-http-client-meta
-                  composer remove --no-update symfony/asset-mapper
-
-                  # Install without dev dependencies and scripts
-                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
-                  composer dump-autoload --optimize --no-dev
-
-            - name: 🛠️ Clean production environment
-              run: |
-                  # Remove DebugBundle references
-                  if [ -f config/bundles.php ]; then
-                    sed -i '/DebugBundle/d' config/bundles.php
-                    sed -i '/WebProfilerBundle/d' config/bundles.php
-                  fi
-
-                  # Remove dev configurations
-                  rm -rf config/packages/dev/
-                  rm -rf config/packages/test/
-
-                  # Create fresh .env
-                  echo "APP_ENV=prod" > .env
-                  echo "APP_DEBUG=0" >> .env
-                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-
-            - name: 🛠️ Fix directory permissions
-              run: |
-                  mkdir -p var/cache/prod var/log
-                  chmod -R 755 var
-                  chmod -R 755 public
-
-            - name: 🧹 Clear and warmup cache
-              run: |
-                  php bin/console cache:clear --env=prod --no-debug
-                  php bin/console cache:warmup --env=prod --no-debug
-
-            - name: 🗑️ Remove development files
-              run: |
-                  rm -rf tests/
-                  rm -rf .github/
-                  rm -f .env.local .env.test .gitattributes .gitignore
-                  find . -name "*.md" -delete
-                  find . -name "*.dist" -delete
-                  find . -name "*.patch" -delete
-
-            - name: 📤 Deploy via FTP
+            - name: 📂 Sync files via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
-                  server: ftpupload.net
+                  server: ftpupload.net # Change if using another host
                   username: ${{ secrets.FTP_Username }}
                   password: ${{ secrets.FTP_Password }}
-                  server-dir: smartplanblueprint.fwh.is/htdocs/
-                  local-dir: ./
-                  exclude: |
-                      **/.git*
-                      **/.github/**
-                      **/tests/**
-                      **/node_modules/**
-                      **/var/cache/**
-                      **/var/log/**
-                      **/.env
-                      composer.*
-                      symfony.lock
-                      phpunit.*
+                  server-dir: smartplanblueprint.fwh.is/htdocs/ # Replace with your correct path
+                  retries: 3
+                  retryDelay: 10
+
+
+#name: 🚀 Deploy to smartplanblueprint.fwh.is
+#
+#on:
+#    push:
+#        branches: [ main, smartplan ]
+#    workflow_dispatch:
+#
+#jobs:
+#    deploy:
+#        name: 🎉 Deploy Symfony to InfinityFree
+#        runs-on: ubuntu-latest
+#        timeout-minutes: 15
+#
+#        steps:
+#            - name: 🚚 Checkout code
+#              uses: actions/checkout@v4
+#
+#            - name: 🐘 Setup PHP
+#              uses: shivammathur/setup-php@v2
+#              with:
+#                  php-version: '8.2'
+#                  extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
+#                  coverage: none
+#                  ini-values: memory_limit=512M
+#
+#            - name: 🔄 Update Composer
+#              run: composer self-update --2
+#
+#            - name: 📦 Install production dependencies
+#              run: |
+#                  # Remove problematic extensions from requirements
+#                  composer remove --no-update symfony/amphp-http-client-meta
+#                  composer remove --no-update symfony/asset-mapper
+#
+#                  # Install without dev dependencies and scripts
+#                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
+#                  composer dump-autoload --optimize --no-dev
+#
+#            - name: 🛠️ Clean production environment
+#              run: |
+#                  # Remove DebugBundle references
+#                  if [ -f config/bundles.php ]; then
+#                    sed -i '/DebugBundle/d' config/bundles.php
+#                    sed -i '/WebProfilerBundle/d' config/bundles.php
+#                  fi
+#
+#                  # Remove dev configurations
+#                  rm -rf config/packages/dev/
+#                  rm -rf config/packages/test/
+#
+#                  # Create fresh .env
+#                  echo "APP_ENV=prod" > .env
+#                  echo "APP_DEBUG=0" >> .env
+#                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+#                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+#
+#            - name: 🛠️ Fix directory permissions
+#              run: |
+#                  mkdir -p var/cache/prod var/log
+#                  chmod -R 755 var
+#                  chmod -R 755 public
+#
+#            - name: 🧹 Clear and warmup cache
+#              run: |
+#                  php bin/console cache:clear --env=prod --no-debug
+#                  php bin/console cache:warmup --env=prod --no-debug
+#
+#            - name: 🗑️ Remove development files
+#              run: |
+#                  rm -rf tests/
+#                  rm -rf .github/
+#                  rm -f .env.local .env.test .gitattributes .gitignore
+#                  find . -name "*.md" -delete
+#                  find . -name "*.dist" -delete
+#                  find . -name "*.patch" -delete
+#
+#            - name: 📤 Deploy via FTP
+#              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#              with:
+#                  server: ftpupload.net
+#                  username: ${{ secrets.FTP_Username }}
+#                  password: ${{ secrets.FTP_Password }}
+#                  server-dir: smartplanblueprint.fwh.is/htdocs/
+#                  local-dir: ./
+#                  exclude: |
+#                      **/.git*
+#                      **/.github/**
+#                      **/tests/**
+#                      **/node_modules/**
+#                      **/var/cache/**
+#                      **/var/log/**
+#                      **/.env
+#                      composer.*
+#                      symfony.lock
+#                      phpunit.*
