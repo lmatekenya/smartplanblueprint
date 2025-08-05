@@ -29,56 +29,65 @@
 name: 🚀 Deploy to smartplanblueprint.fwh.is
 
 on:
+    push:
+        branches: [ main, smartplan ]
     workflow_dispatch:
-        push:
-            branches:
-                - main
-                - smartplan
 
 jobs:
     deploy:
-        name: 🎉 Deploy to smartplanblueprint.fwh.is
+        name: 🎉 Deploy Symfony to InfinityFree
         runs-on: ubuntu-latest
 
         steps:
-            - name: 🚚 Get latest code
+            - name: 🚚 Checkout code
               uses: actions/checkout@v4
 
-            - name: Setup PHP
+            - name: 🐘 Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: '8.2'
                   extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
                   coverage: none
 
-            - name: 📥 Install Dependencies
+            - name: 📦 Install dependencies
               run: |
-                  composer install --no-dev --optimize-autoloader
+                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs
                   composer dump-autoload --optimize
 
-            - name: 🔨 Setup Environment
+            - name: 🔧 Configure environment
               run: |
                   echo "APP_ENV=prod" > .env
                   echo "APP_DEBUG=0" >> .env
                   echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+#                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
 
-            - name: 🧹 Clear Cache
+            - name: 🧹 Clear and warmup cache
               run: |
                   rm -rf var/cache/*
-                  php bin/console cache:clear --env=prod
-                  php bin/console cache:warmup --env=prod
+                  php bin/console cache:clear --env=prod --no-debug
+                  php bin/console cache:warmup --env=prod --no-debug
 
-            - name: 📂 Sync files via FTP
+            - name: 🗑️ Remove development files
+              run: |
+                  rm -rf tests/
+                  rm -rf .github/
+                  rm -f .env.local .env.test .gitattributes .gitignore
+
+            - name: 📤 Deploy via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
                   server: ftpupload.net
                   username: ${{ secrets.FTP_Username }}
                   password: ${{ secrets.FTP_Password }}
                   server-dir: smartplanblueprint.fwh.is/htdocs/
-                  retries: 3
-                  retryDelay: 10
+                  local-dir: ./
                   exclude: |
                       **/.git*
-                      **/.git*/**
+                      **/.github/**
+                      **/tests/**
                       **/node_modules/**
-                      tests/**
+                      **/var/cache/**
+                      **/var/log/**
+                      **/.env
+                      composer.*
+                      symfony.lock
