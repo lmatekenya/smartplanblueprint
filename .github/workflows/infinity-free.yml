@@ -49,10 +49,10 @@ jobs:
                   extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
                   coverage: none
 
-            - name: 📦 Install dependencies
+            - name: 📦 Install production dependencies
               run: |
                   composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-                  composer dump-autoload --optimize
+                  composer dump-autoload --optimize --no-dev
 
             - name: 🔧 Configure environment
               run: |
@@ -60,6 +60,8 @@ jobs:
                   echo "APP_DEBUG=0" >> .env
                   echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 #                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+                  # Remove debug configuration
+                  sed -i '/DebugBundle/d' config/bundles.php
 
             - name: 🧹 Clear and warmup cache
               run: |
@@ -72,6 +74,7 @@ jobs:
                   rm -rf tests/
                   rm -rf .github/
                   rm -f .env.local .env.test .gitattributes .gitignore
+                  rm -f config/packages/dev/*.yaml config/packages/test/*.yaml
 
             - name: 📤 Deploy via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
