@@ -9,6 +9,7 @@ use App\Entity\LimitsAndDocs\Provider;
 use App\Entity\Merchant\MerchantDetails;
 use App\Entity\Merchant\OutletDetails;
 use App\Entity\Merchant\PortalUserDetails;
+use App\Entity\Reports\Outlet\ReportsTransaction;
 use App\Repository\MerchantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -61,6 +62,10 @@ class Merchant
     #[ORM\Column(type: 'string', length: 50)]
     private $clientId;
 
+    #[ORM\OneToMany(mappedBy: 'merchant', targetEntity: ReportsTransaction::class)]
+    private Collection $transactions;
+
+
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Commission", mappedBy="merchant")
      */
@@ -83,8 +88,10 @@ class Merchant
         $this->providers = new ArrayCollection();
         $this->agreementCommissions = new ArrayCollection();
         $this->agreements = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
 
     }
+
 
     public function getAgreementCommissions(): ArrayCollection
     {
@@ -327,6 +334,34 @@ class Merchant
             // set the owning side to null (unless already changed)
             if ($provider->getMerchant() === $this) {
                 $provider->setMerchant(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReportsTransaction>
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(ReportsTransaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions->add($transaction);
+            $transaction->setMerchant($this);
+        }
+        return $this;
+    }
+
+    public function removeTransaction(ReportsTransaction $transaction): self
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getMerchant() === $this) {
+                $transaction->setMerchant(null);
             }
         }
         return $this;

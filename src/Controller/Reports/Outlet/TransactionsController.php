@@ -68,6 +68,7 @@
 // src/Controller/Reports/Outlet/TransactionsController.php
 namespace App\Controller\Reports\Outlet;
 
+use App\Entity\Merchant;
 use App\Repository\Reports\Outlet\ReportTransactionRepository;
 use App\Repository\TransactionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -77,33 +78,32 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/merchant')]
 class TransactionsController extends AbstractController
 {
-//    private TransactionRepository $transactionRepository;
-    private ReportTransactionRepository $reportTransactionRepository;
 
-    public function __construct(TransactionRepository $transactionRepository,
-    ReportTransactionRepository $reportTransactionRepository)
-    {
-//        $this->transactionRepository = $transactionRepository;
-        $this->reportTransactionRepository = $reportTransactionRepository;
-    }
-
-    #[Route('outlet/{outletId}/transactions', name: 'app_transactions')]
-    public function index(Request $request, int $outletId): Response
+    #[Route('outlet/{id}/transactions', name: 'app_transactions')]
+    public function index(Request $request, Merchant $merchant, ReportTransactionRepository $reportTransactionRepository): Response
     {
         $dateFilter = $request->query->get('date');
+        $startDateFilter = $request->query->get('startDate');
+        $endDateFilter = $request->query->get('endDate');
         $detailFilter = $request->query->get('detail');
 
-        $transactions = $this->reportTransactionRepository->findByFilters($outletId, $dateFilter, $detailFilter);
+        $transactions = $reportTransactionRepository->findByFilters(
+            $merchant->getId(),
+            $dateFilter,
+            $detailFilter
+        );
 
         return $this->render('reports/outlet_reports/transactions.html.twig', [
             'transactions' => $transactions,
-            'outletId' => $outletId,
-            'salesTotal' => $this->reportTransactionRepository->getSalesTotal($transactions),
-            'failedCount' => $this->reportTransactionRepository->getFailedCount($transactions),
-            'commission' => $this->reportTransactionRepository->getCommissionTotal($transactions),
-            'deposits' => $this->reportTransactionRepository->getDepositsTotal($transactions),
-            'reversals' => $this->reportTransactionRepository->getReversalsTotal($transactions),
+            'merchant' => $merchant, // Pass the merchant object to the template
+            'salesTotal' => $reportTransactionRepository->getSalesTotal($transactions),
+            'failedCount' => $reportTransactionRepository->getFailedCount($transactions),
+            'commission' => $reportTransactionRepository->getCommissionTotal($transactions),
+            'deposits' => $reportTransactionRepository->getDepositsTotal($transactions),
+            'reversals' => $reportTransactionRepository->getReversalsTotal($transactions),
             'dateFilter' => $dateFilter,
+            'startDateFilter' => $startDateFilter,
+            'endDateFilter' => $endDateFilter,
             'detailFilter' => $detailFilter,
         ]);
     }

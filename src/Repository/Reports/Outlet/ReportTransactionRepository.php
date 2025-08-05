@@ -53,31 +53,100 @@ class ReportTransactionRepository extends ServiceEntityRepository
 //        return $qb->getQuery()->getResult();
 //    }
 
-    public function findByFilters($outletId, $date = null, $detail = null)
+    public function findByFilters($merchantId, $startDate = null, $endDate = null, $detail = null)
     {
         $qb = $this->createQueryBuilder('t')
-            ->where('t.outletId = :outletId')
-            ->setParameter('outletId', $outletId)
+            ->where('t.merchant = :merchantId')
+            ->setParameter('merchantId', $merchantId)
             ->orderBy('t.dateTime', 'DESC');
 
-        if ($date) {
-            $dateStart = new \DateTime($date);
-            $dateEnd = clone $dateStart;
-            $dateEnd->modify('+1 day');
+        // Handle date filters (only if detail is empty)
+        if (empty($detail)) {
+            if ($startDate) {
+                try {
+                    $startDateObj = new \DateTime($startDate);
+                    $startDateObj->setTime(0, 0, 0);
+                    $qb->andWhere('t.dateTime >= :startDate')
+                        ->setParameter('startDate', $startDateObj);
+                } catch (\Exception $e) {
+                    throw new \InvalidArgumentException('Invalid start date format');
+                }
+            }
 
-            $qb->andWhere('t.dateTime >= :dateStart')
-                ->andWhere('t.dateTime < :dateEnd')
-                ->setParameter('dateStart', $dateStart)
-                ->setParameter('dateEnd', $dateEnd);
+            if ($endDate) {
+                try {
+                    $endDateObj = new \DateTime($endDate);
+                    $endDateObj->setTime(23, 59, 59);
+                    $qb->andWhere('t.dateTime <= :endDate')
+                        ->setParameter('endDate', $endDateObj);
+                } catch (\Exception $e) {
+                    throw new \InvalidArgumentException('Invalid end date format');
+                }
+            }
         }
 
-        if ($detail) {
-            $qb->andWhere('t.detail LIKE :detail')
-                ->setParameter('detail', '%'.$detail.'%');
+        // Handle detail search
+        if (!empty($detail)) {
+            $qb->andWhere('LOWER(t.detail) LIKE LOWER(:detail)')
+                ->setParameter('detail', '%'.addcslashes($detail, '%_').'%');
         }
 
         return $qb->getQuery()->getResult();
     }
+
+//    public function findByFilters($merchantId, $startDate = null,$endDate = null, $detail = null)
+//    {
+//        $qb = $this->createQueryBuilder('t')
+//            ->where('t.merchant = :merchantId')
+//            ->setParameter('merchantId', $merchantId)
+//            ->orderBy('t.dateTime', 'DESC');
+//
+////        if ($date) {
+////            $dateStart = \DateTime::createFromFormat('Y-m-d', $date);
+////            $dateStart->setTime(0, 0, 0);
+////
+////            $dateEnd = clone $dateStart;
+////            $dateEnd->modify('+1 day');
+////
+////            $qb->andWhere('t.dateTime >= :startDate')
+////                ->andWhere('t.dateTime < :endDate')
+////                ->setParameter('startDate', $dateStart)
+////                ->setParameter('endDate', $dateEnd);
+////        }
+//
+//        if ($startDate && $endDate) {
+//            $startDateObj = \DateTime::createFromFormat('Y-m-d', $startDate);
+//            $startDateObj->setTime(0, 0, 0);
+//
+//            $endDateObj = \DateTime::createFromFormat('Y-m-d', $endDate);
+//            $endDateObj->setTime(23, 59, 59);
+//
+//            $qb->andWhere('t.dateTime BETWEEN :startDate AND :endDate')
+//                ->setParameter('startDate', $startDateObj)
+//                ->setParameter('endDate', $endDateObj);
+//        } elseif ($startDate) {
+//            $startDateObj = \DateTime::createFromFormat('Y-m-d', $startDate);
+//            $startDateObj->setTime(0, 0, 0);
+//
+//            $qb->andWhere('t.dateTime >= :startDate')
+//                ->setParameter('startDate', $startDateObj);
+//        } elseif ($endDate) {
+//            $endDateObj = \DateTime::createFromFormat('Y-m-d', $endDate);
+//            $endDateObj->setTime(23, 59, 59);
+//
+//            $qb->andWhere('t.dateTime <= :endDate')
+//                ->setParameter('endDate', $endDateObj);
+//        }
+//
+//        if ($detail) {
+//            $qb->andWhere('t.detail LIKE :detail')
+//                ->setParameter('detail', '%'.addcslashes($detail, '%_').'%');
+//        }
+//
+//        return $qb->getQuery()->getResult();
+//    }
+
+
 
     public function getSalesTotal(array $transactions = null): float
     {

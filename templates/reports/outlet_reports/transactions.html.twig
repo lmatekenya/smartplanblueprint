@@ -7,9 +7,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"> / </span>
-        <a href="{{ path('app_transactions', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Transactions</a>
+        <a href="{{ path('app_transactions', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Transactions</a>
     </div>
 {% endblock %}
 
@@ -227,26 +227,31 @@
         .status-success {
             background-color: rgba(76, 175, 80, 0.1);
             color: var(--success);
+            width: 50%;
         }
 
         .status-failed {
             background-color: rgba(244, 67, 54, 0.1);
             color: var(--danger);
+            width: 50%;
         }
 
         .status-pending {
             background-color: rgba(255, 193, 7, 0.1);
             color: var(--warning);
+            width: 50%;
         }
 
         .status-processing {
             background-color: rgba(33, 150, 243, 0.1);
             color: #2196f3;
+            width: 50%;
         }
 
         .status-refunded {
             background-color: rgba(156, 39, 176, 0.1);
             color: #9c27b0;
+            width: 50%;
         }
 
         .status-indicator {
@@ -332,26 +337,26 @@
 
         </div>
 
-        <div class="transactions-filters">
-            <form method="get" action="{{ path('app_transactions', {'outletId': outletId}) }}">
+        <!--div-- class="transactions-filters">
+            <form method="get" action="{{ path('app_transactions', {'id': merchant.id}) }}">
                 <div class="filter-row">
+{#                    <div class="filter-group">#}
+{#                        <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>#}
+{#                        <input type="date" id="date" name="date" value="{{ dateFilter }}">#}
+{#                    </div>#}
+
+{#                    <div style="display: none;">#}
+{#                        Debug: Date Filter = {{ dateFilter }}, Detail Filter = {{ detailFilter }}#}
+{#                    </div>#}
+
                     <div class="filter-group">
-                        <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>
-                        <input type="date" id="date" name="date" value="{{ dateFilter }}">
+                        <label for="startDate"><i class="fas fa-calendar-alt"></i>Start Date</label>
+                        <input type="date" id="startDate" name="startDate" value="{{ startDateFilter }}">
                     </div>
-
-                    <div style="display: none;">
-                        Debug: Date Filter = {{ dateFilter }}, Detail Filter = {{ detailFilter }}
+                    <div class="filter-group">
+                        <label for="endDate"><i class="fas fa-calendar-alt"></i>End Date</label>
+                        <input type="date" id="endDate" name="endDate" value="{{ endDateFilter }}">
                     </div>
-
-{#                    <div class="filter-group">#}
-{#                        <label for="startDate"><i class="fas fa-calendar-alt"></i>Start Date</label>#}
-{#                        <input type="date" id="startDate" name="startDate" value="{{ startDateFilter }}">#}
-{#                    </div>#}
-{#                    <div class="filter-group">#}
-{#                        <label for="endDate"><i class="fas fa-calendar-alt"></i>End Date</label>#}
-{#                        <input type="date" id="endDate" name="endDate" value="{{ endDateFilter }}">#}
-{#                    </div>#}
 
                     <div class="filter-group">
                         <label for="detail"><i class="fas fa-search"></i> Filter by Detail</label>
@@ -362,7 +367,42 @@
                     <button type="submit" class="btn-filter">
                         <i class="fas fa-filter"></i> Apply Filters
                     </button>
-                    <a href="{{ path('app_transactions', {'outletId': outletId}) }}" class="btn-clear">
+                    <a href="{{ path('app_transactions', {'id': merchant.id}) }}" class="btn-clear">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div-->
+
+
+        <div class="transactions-filters">
+            <form method="get" action="{{ path('app_transactions', {'id': merchant.id}) }}">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="startDate"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                        <input type="date" id="startDate" name="startDate"
+                               value="{{ startDateFilter }}"
+                               max="{{ endDateFilter ? endDateFilter : 'now'|date('Y-m-d') }}">
+                    </div>
+                    <div class="filter-group">
+                        <label for="endDate"><i class="fas fa-calendar-alt"></i> End Date</label>
+                        <input type="date" id="endDate" name="endDate"
+                               value="{{ endDateFilter }}"
+                               min="{{ startDateFilter ? startDateFilter : '' }}"
+                               max="{{ 'now'|date('Y-m-d') }}">
+                    </div>
+                    <div class="filter-group">
+                        <label for="detail"><i class="fas fa-search"></i> Filter by Detail</label>
+                        <input type="text" id="detail" name="detail"
+                               placeholder="Enter transaction detail..."
+                               value="{{ detailFilter }}">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <a href="{{ path('app_transactions', {'id': merchant.id}) }}" class="btn-clear">
                         <i class="fas fa-times"></i> Clear
                     </a>
                 </div>
@@ -423,8 +463,8 @@
                 <tbody>
                 {% for txn in transactions %}
                     <tr>
-                        <td>{{ txn.date_time|date('Y-m-d H:i:s') }}</td>
-                        <td>{{ txn.outlet_id }}</td>
+                        <td>{{ txn.dateTime|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ txn.outletId }}</td>
                         <td>{{ txn.type }}</td>
                         <td>{{ txn.detail }}</td>
                         <td>P{{ txn.value|number_format(2, '.', ',') }}</td>
@@ -453,12 +493,106 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Set today's date as default if no date filter is applied
+        //     // const dateInput = document.getElementById('date');
+        //     // if (dateInput && !dateInput.value) {
+        //     //     const today = new Date().toISOString().split('T')[0];
+        //     //     dateInput.value = today;
+        //     // }
+        //
+        //     // Add subtle animation to summary cards
+        //     const summaryCards = document.querySelectorAll('.summary-card');
+        //     summaryCards.forEach((card, index) => {
+        //         card.style.transitionDelay = `${index * 0.1}s`;
+        //     });
+        //
+        //     // Add status tooltips
+        //     document.querySelectorAll('.status-badge').forEach(badge => {
+        //         badge.title = `Transaction is ${badge.textContent.trim()}`;
+        //     });
+        //
+        //
+        //
+        //     // Date validation
+        //     const startDateInput = document.getElementById('startDate');
+        //     const endDateInput = document.getElementById('endDate');
+        //
+        //     startDateInput?.addEventListener('change', function() {
+        //         endDateInput.min = this.value;
+        //     });
+        //
+        //     endDateInput?.addEventListener('change', function() {
+        //         startDateInput.max = this.value;
+        //     });
+        //
+        //     // Set default dates if none are selected
+        //     if (!startDateInput.value && !endDateInput.value) {
+        //         const today = new Date().toISOString().split('T')[0];
+        //         const oneWeekAgo = new Date();
+        //         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        //         const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0];
+        //
+        //         startDateInput.value = oneWeekAgoStr;
+        //         endDateInput.value = today;
+        //     }
+        // });
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default if no date filter is applied
-            const dateInput = document.getElementById('date');
-            if (dateInput && !dateInput.value) {
+            // Get DOM elements
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const detailInput = document.getElementById('detail');
+
+            // const hasValue = this.value.trim().length > 0;
+            // document.getElementById('startDate').disabled = hasValue;
+            // document.getElementById('endDate').disabled = hasValue;
+            //
+            // if (hasValue) {
+            //     document.getElementById('startDate').value = '';
+            //     document.getElementById('endDate').value = '';
+            // }
+
+            // Set default dates if none are selected
+            if (!startDateInput.value && !endDateInput.value) {
                 const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0];
+
+                startDateInput.value = oneWeekAgoStr;
+                endDateInput.value = today;
+            }
+
+            // Date validation and relationship
+            if (startDateInput) {
+                startDateInput.addEventListener('change', function() {
+                    endDateInput.min = this.value;
+                });
+            }
+
+            if (endDateInput) {
+                endDateInput.addEventListener('change', function() {
+                    startDateInput.max = this.value;
+                });
+            }
+
+            // Disable date inputs when detail search is active
+            if (detailInput) {
+                detailInput.addEventListener('input', function() {
+                    const hasDetailValue = this.value.trim().length > 0;
+
+                    startDateInput.disabled = hasDetailValue;
+                    endDateInput.disabled = hasDetailValue;
+
+                    if (hasDetailValue) {
+                        startDateInput.value = '';
+                        endDateInput.value = '';
+                    }
+                });
+
+                // Initialize disabled state based on current value
+                detailInput.dispatchEvent(new Event('input'));
             }
 
             // Add subtle animation to summary cards
@@ -472,5 +606,6 @@
                 badge.title = `Transaction is ${badge.textContent.trim()}`;
             });
         });
+
     </script>
 {% endblock %}

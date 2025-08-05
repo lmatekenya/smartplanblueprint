@@ -140,14 +140,14 @@ merchant_commissions:
     methods: GET
 
 reports:
-    path: /reports/{outletId}
+    path: /reports/{id}
     controller: App\Controller\Reports\ReportsController::reports
     methods: GET
 
 report_outlet_transaction:
-    path: /merchant/outlet/{outletId}/transactions
+    path: /merchant/outlet/{id}/transactions
     controller: App\Controller\Reports\Outlet\TransactionsController::index
-    methods: GET
+    methods: [GET, POST]
 
 #merchant_details:
 #    path: /merchant/details/{id}

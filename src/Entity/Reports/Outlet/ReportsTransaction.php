@@ -2,8 +2,10 @@
 
 namespace App\Entity\Reports\Outlet;
 
+use App\Entity\Merchant;
 use Doctrine\ORM\Mapping as ORM;
-
+#[ORM\Index(name: 'idx_detail', columns: ['detail'])]
+#[ORM\Index(name: 'idx_date_time', columns: ['date_time'])]
 #[ORM\Entity(repositoryClass: "App\Repository\TransactionRepository")]
 #[ORM\Table(name: "report_outlet_transactions")]
 class ReportsTransaction
@@ -30,6 +32,10 @@ class ReportsTransaction
 
     #[ORM\Column(type: "string", length: 20)]
     private ?string $status = null;
+
+    #[ORM\ManyToOne(targetEntity: Merchant::class, inversedBy: 'transactions')]
+    #[ORM\JoinColumn(name: 'merchant_id', referencedColumnName: 'id', nullable: false)]
+    private ?Merchant $merchant = null;
 
     public function getId(): ?int
     {
@@ -99,6 +105,17 @@ class ReportsTransaction
     public function setStatus(string $status): self
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getMerchant(): ?Merchant
+    {
+        return $this->merchant;
+    }
+
+    public function setMerchant(?Merchant $merchant): self
+    {
+        $this->merchant = $merchant;
         return $this;
     }
 }

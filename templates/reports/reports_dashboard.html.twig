@@ -163,7 +163,7 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports', {'outletId': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'id': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"></span>
     </div>
 {% endblock %}
@@ -304,7 +304,6 @@
 {% block body %}
     <div class="dashboard-card">
         <h2>Reports</h2>
-
         <div class="reports-container">
             {% for category, reports in reportCategories %}
                 <div class="report-category">
@@ -318,7 +317,9 @@
                                     <div class="report-actions">
                                         <button class="btn-generate">Generate Report</button>
                                         {% if reportData.route is defined %}
-                                            <a href="{{ path(reportData.route, reportData.params) }}" class="btn-view">
+                                            {# Pass the outletId in the params #}
+                                            {% set params = reportData.params|merge({'id': outletId}) %}
+                                            <a href="{{ path(reportData.route, params) }}" class="btn-view">
                                                 <i class="fas fa-eye"></i> View
                                             </a>
                                         {% else %}

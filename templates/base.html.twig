@@ -182,7 +182,7 @@
 {#        <i class="fas fa-file-alt"></i> Reports#}
 {#    </a>#}
 
-    <a href="{% if merchant is defined and merchant.id %}{{ path('app_reports', {'outletId': merchant.id}) }}{% else %}#{% endif %}"
+    <a href="{% if merchant is defined and merchant.id %}{{ path('app_reports', {'id': merchant.id}) }}{% else %}#{% endif %}"
        class="sidebar-item {{ app.request.get('_route') starts with 'app_reports' ? 'active' : '' }}"
        {% if not (merchant is defined and merchant.id) %}title="Select a merchant first"{% endif %}>
         <i class="fas fa-file-alt"></i> Reports
@@ -230,6 +230,7 @@
                 }
             });
         });
+
     </script>
 {% endblock %}
 </body>

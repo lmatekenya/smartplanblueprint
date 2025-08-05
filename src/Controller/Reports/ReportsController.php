@@ -9,8 +9,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ReportsController extends AbstractController
 {
-    #[Route('/reports/{outletId}', name: 'app_reports')]
-    public function reports(int $outletId): Response
+    #[Route('/reports/{id}', name: 'app_reports')]
+    public function reports(int $id): Response
     {
         $reportCategories = [
                 'OUTLET' => [
@@ -24,12 +24,12 @@ class ReportsController extends AbstractController
 //                        'route' => 'app_itemised_report',
 //                        'params' => ['outletId' => $outletId]
 //                    ],
-                    new Report('Transactions', 'app_transactions', ['outletId' => $outletId]),
-                    new Report('Itemised Report', 'app_itemised_report', ['outletId' => $outletId]),
-                    new Report('Category Report', 'app_category_report', ['outletId' => $outletId]),
-                    new Report('User Report', 'app_user_report', ['outletId' => $outletId]),
-                    new Report('Outlet Report', 'app_outlet_report', ['outletId' => $outletId]),
-                    new Report('Sales By Date', 'app_sales_by_date_report', ['outletId' => $outletId]),
+                    new Report('Transactions', 'app_transactions', ['outletId' => $id]),
+                    new Report('Itemised Report', 'app_itemised_report', ['outletId' => $id]),
+                    new Report('Category Report', 'app_category_report', ['outletId' => $id]),
+                    new Report('User Report', 'app_user_report', ['outletId' => $id]),
+                    new Report('Outlet Report', 'app_outlet_report', ['outletId' => $id]),
+                    new Report('Sales By Date', 'app_sales_by_date_report', ['outletId' => $id]),
 //                    'Sales By Category' => [
 //                        'name' => 'Sales By Category',
 //                        'route' => 'app_category_report',
@@ -55,17 +55,17 @@ class ReportsController extends AbstractController
                     'Recon Report' => [
                         'name' => 'Recon Report',
 //                        'route' => 'app_recon_report',
-                        'params' => ['outletId' => $outletId]
+                        'params' => ['outletId' => $id]
                     ],
                     'Transactions by Date Range' => [
                         'name' => 'Transactions by Date Range',
 //                        'route' => 'app_transactions_by_date_range',
-                        'params' => ['outletId' => $outletId]
+                        'params' => ['outletId' => $id]
                     ],
                     'Merchant Statement' => [
                         'name' => 'Merchant Statement',
 //                        'route' => 'app_merchant_statement',
-                        'params' => ['outletId' => $outletId]
+                        'params' => ['outletId' => $id]
                     ]
 
 
@@ -80,17 +80,17 @@ class ReportsController extends AbstractController
                 'Group Itemised Report' => [
                     'name' => 'Group Itemised Report',
                     'route' => 'group_itemised_report',
-                    'params' => ['outletId' => $outletId],
+                    'params' => ['outletId' => $id],
                 ],
                 'Group Category Report' => [
                     'name' => 'Group Category Report',
                     'route' => 'group_category_report',
-                    'params' => ['outletId' => $outletId],
+                    'params' => ['outletId' => $id],
                 ],
                 'Group Sales By Date' => [
                     'name' => 'Group Sales By Date',
                     'route' => 'group_sales_by_date_report',
-                    'params' => ['outletId' => $outletId],
+                    'params' => ['outletId' => $id],
                 ],
 
 //                'Group Itemised Report',
@@ -103,7 +103,7 @@ class ReportsController extends AbstractController
 
         return $this->render('reports/reports_dashboard.html.twig', [
             'reportCategories' => $reportCategories,
-            'outletId' => $outletId
+            'outletId' => $id
         ]);
     }
 }

@@ -7,9 +7,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"> / </span>
-        <a href="{{ path('app_itemised_report') }}" style="color: #7f8c8d;" class="breadcrumb-link">Itemised-Report</a>
+        <a href="{{ path('app_itemised_report', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Itemised-Report</a>
     </div>
 {% endblock %}
 
@@ -310,7 +310,7 @@
     <div class="dashboard-card">
 
         <div class="transactions-filters">
-            <form method="get" action="{{ path('app_itemised_report') }}">
+            <form method="get" action="{{ path('app_itemised_report', {'id': merchant.id}) }}">
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>
@@ -325,7 +325,7 @@
                     <button type="submit" class="btn-filter">
                         <i class="fas fa-filter"></i> Apply Filters
                     </button>
-                    <a href="{{ path('app_itemised_report') }}" class="btn-clear">
+                    <a href="{{ path('app_itemised_report', {'id': merchant.id}) }}" class="btn-clear">
                         <i class="fas fa-times"></i> Clear
                     </a>
                 </div>
