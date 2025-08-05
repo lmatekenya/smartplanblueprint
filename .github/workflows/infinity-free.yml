@@ -22,6 +22,6 @@ jobs:
                   server: ftpupload.net # Change if using another host
                   username: ${{ secrets.FTP_Username }}
                   password: ${{ secrets.FTP_Password }}
-                  server-dir: htdocs/ # Replace with your correct path
+                  server-dir: smartplanblueprint.fwh.is/htdocs/ # Replace with your correct path
                   retries: 3
                   retryDelay: 10
