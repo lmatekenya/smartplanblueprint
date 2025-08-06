@@ -57,15 +57,17 @@ jobs:
 #
 #            - name: 📦 Install production dependencies
 #              run: |
-#                  # First update composer.json to match lock file
-#                  composer update --no-dev --no-scripts --ignore-platform-reqs
-#                  # Then install with optimized autoloader
+#                  # Remove problematic extensions from requirements
+#                  composer remove --no-update symfony/amphp-http-client-meta
+#                  composer remove --no-update symfony/asset-mapper
+#
+#                  # Install without dev dependencies and scripts
 #                  composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 #                  composer dump-autoload --optimize --no-dev
 #
 #            - name: 🛠️ Clean production environment
 #              run: |
-#                  # Remove DebugBundle/WebProfilerBundle references
+#                  # Remove DebugBundle references
 #                  if [ -f config/bundles.php ]; then
 #                    sed -i '/DebugBundle/d' config/bundles.php
 #                    sed -i '/WebProfilerBundle/d' config/bundles.php
@@ -74,7 +76,6 @@ jobs:
 #                  # Remove dev configurations
 #                  rm -rf config/packages/dev/
 #                  rm -rf config/packages/test/
-#                  rm -f config/packages/web_profiler.yaml
 #
 #                  # Create fresh .env
 #                  echo "APP_ENV=prod" > .env
