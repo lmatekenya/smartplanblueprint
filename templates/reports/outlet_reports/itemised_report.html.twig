@@ -312,10 +312,25 @@
         <div class="transactions-filters">
             <form method="get" action="{{ path('app_itemised_report', {'id': merchant.id}) }}">
                 <div class="filter-row">
+{#                    <div class="filter-group">#}
+{#                        <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>#}
+{#                        <input type="date" id="date" name="date" value="{{ dateFilter }}">#}
+{#                    </div>#}
+
                     <div class="filter-group">
-                        <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>
-                        <input type="date" id="date" name="date" value="{{ dateFilter }}">
+                        <label for="startDate"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                        <input type="date" id="startDate" name="startDate"
+                               value="{{ startDateFilter }}"
+                               max="{{ endDateFilter ? endDateFilter : 'now'|date('Y-m-d') }}">
                     </div>
+                    <div class="filter-group">
+                        <label for="endDate"><i class="fas fa-calendar-alt"></i> End Date</label>
+                        <input type="date" id="endDate" name="endDate"
+                               value="{{ endDateFilter }}"
+                               min="{{ startDateFilter ? startDateFilter : '' }}"
+                               max="{{ 'now'|date('Y-m-d') }}">
+                    </div>
+
                     <div class="filter-group">
                         <label for="detail"><i class="fas fa-search"></i> Filter by Detail</label>
                         <input type="text" id="detail" name="detail" placeholder="Enter transaction detail..." value="{{ detailFilter }}">
@@ -345,13 +360,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for txn in transactions %}
+                {% for item in items %}
                     <tr>
-                        <td>{{ txn.date_time|date('Y-m-d H:i:s') }}</td>
-                        <td>{{ txn.user_id }}</td>
-                        <td>{{ txn.sale_type }}</td>
-                        <td>{{ txn.transaction_detail }}</td>
-                        <td>P{{ txn.sale_value|number_format(2, '.', ',') }}</td>
+                        <td>{{ item.dateTime|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ item.user_id }}</td>
+                        <td>{{ item.saleType }}</td>
+                        <td>{{ item.transactionDetail }}</td>
+                        <td>P{{ item.saleValue|number_format(2, '.', ',') }}</td>
                         <td><button class="btn-view">View</button></td>
                     </tr>
                 {% else %}

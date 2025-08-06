@@ -118,7 +118,6 @@ app_limits_and_docs_remove:
     controller: App\Controller\LimitsAndDocs\CreditLimitController::remove
     methods: [GET, POST]
 
-
 app_limits_and_docs_providers:
     path: /merchant/providers/{id}
     controller: App\Controller\LimitsAndDocs\ProviderController::provider
@@ -148,6 +147,46 @@ report_outlet_transaction:
     path: /merchant/outlet/{id}/transactions
     controller: App\Controller\Reports\Outlet\TransactionsController::index
     methods: [GET, POST]
+
+report_outlet_item:
+    path: /merchant/outlet/{id}/itemised
+    controller: App\Controller\Reports\Outlet\ItemisedReportController::itemized
+    methods: [GET, POST]
+
+report_outlet_category:
+    path: /merchant/outlet/{id}/category
+    controller: App\Controller\Reports\Outlet\CategoryReportController::categories
+    methods: GET
+
+report_users_outlet:
+    path: /merchant/outlet/{id}/user
+    controller: App\Controller\Reports\Outlet\UserReportController::users
+    methods: GET
+
+report_outlets:
+    path: /merchant/outlet/{id}/outlets
+    controller: App\Controller\Reports\Outlet\OutletReportController::index
+    methods: [GET, POST]
+
+report_outlet_sale_by_date:
+    path: /merchant/outlet/{id}/sales_by_date
+    controller: App\Controller\Reports\Outlet\SaleByDateController::index
+    methods: GET
+
+report_group_category:
+    path: /merchant/group/{id}/groupCategory
+    controller: App\Controller\Reports\Group\GroupCategoryReportController::index
+    methods: GET
+
+report_group_itemised:
+    path: /merchant/group/{id}/groupItemised
+    controller: App\Controller\Reports\Group\GroupItemisedReportController::index
+    methods: GET
+
+report_group_sale_by_date:
+    path: /merchant/group/{id}/group_sales_by_date
+    controller: App\Controller\Reports\Group\GroupSalesByDateController::index
+    methods: GET
 
 #merchant_details:
 #    path: /merchant/details/{id}

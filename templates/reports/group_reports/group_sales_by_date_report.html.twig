@@ -7,9 +7,9 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports') }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"> / </span>
-        <a href="{{ path('group_sales_by_date_report') }}" style="color: #7f8c8d;" class="breadcrumb-link">Group-Date-Report</a>
+        <a href="{{ path('group_sales_by_date_report', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Group-Date-Report</a>
     </div>
 {% endblock %}
 
@@ -310,7 +310,7 @@
     <div class="dashboard-card">
 
         <div class="transactions-filters">
-            <form method="get" action="{{ path('group_sales_by_date_report') }}">
+            <form method="get" action="{{ path('group_sales_by_date_report', {'id': merchant.id}) }}">
                 <div class="filter-row">
                     <div class="filter-group">
                         <label for="date"><i class="fas fa-calendar-alt"></i> Filter by Date</label>
@@ -325,7 +325,7 @@
                     <button type="submit" class="btn-filter">
                         <i class="fas fa-filter"></i> Apply Filters
                     </button>
-                    <a href="{{ path('group_sales_by_date_report') }}" class="btn-clear">
+                    <a href="{{ path('group_sales_by_date_report', {'id': merchant.id}) }}" class="btn-clear">
                         <i class="fas fa-times"></i> Clear
                     </a>
                 </div>
@@ -341,7 +341,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for txn in transactions %}
+                {% for txn in groupDateSales %}
                     <tr>
                         <td>{{ txn.date_time|date('Y-m-d H:i:s') }}</td>
                         <td>P{{ txn.sale_value|number_format(2, '.', ',') }}</td>

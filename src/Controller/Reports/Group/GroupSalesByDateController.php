@@ -2,49 +2,36 @@
 
 namespace App\Controller\Reports\Group;
 
+use App\Entity\Merchant;
+use App\Repository\Reports\Group\ReportGroupSaleByDateRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 class GroupSalesByDateController extends AbstractController
 {
-    #[Route('/group_sales_by_date', name: 'group_sales_by_date_report')]
-    public function index(Request $request): Response{
-        // Sample data
-        $transactions = [
-            [
-                'date_time' => '2025-07-16 00:07:31',
-                'sale_value' => 3420.00,
-            ],
-        ];
+    #[Route('group/{id}/group_sales_by_date', name: 'group_sales_by_date_report')]
+    public function index(Request $request, Merchant $merchant, ReportGroupSaleByDateRepository $reportGroupSaleByDateRepository): Response{
 
-        // Get filters from request
         $dateFilter = $request->query->get('date');
+        $startDateFilter = $request->query->get('startDate');
+        $endDateFilter = $request->query->get('endDate');
         $detailFilter = $request->query->get('detail');
 
-        // Apply filters
-        $filteredTransactions = $transactions;
-
-        if ($dateFilter) {
-            $filteredTransactions = array_filter($filteredTransactions, function($txn) use ($dateFilter) {
-                $txnDate = date('Y-m-d', strtotime($txn['date_time']));
-                return $txnDate === $dateFilter;
-            });
-        }
-
-        if ($detailFilter) {
-            $filteredTransactions = array_filter($filteredTransactions, function($txn) use ($detailFilter) {
-                return stripos($txn['detail'], $detailFilter) !== false;
-            });
-        }
-
+        $groupDateSales = $reportGroupSaleByDateRepository->findByFilters(
+            $merchant->getId(),
+            $dateFilter,
+            $detailFilter
+        );
         // Summary calculations
-        $total = array_reduce($filteredTransactions, function($carry, $txn) {
-            return $carry + $txn['sale_value']; // Simply sum all sale values
+        $total = array_reduce($groupDateSales, function($carry, $groupDateSales) {
+            return $carry + (float)$groupDateSales->getSaleValue();
+
         }, 0);
 
         return $this->render('reports/group_reports/group_sales_by_date_report.html.twig',[
-            'transactions' => $filteredTransactions,
+            'merchant' => $merchant,
+            'groupDateSales' => $groupDateSales,
             'total' => $total,
             'detailFilter' => $detailFilter,
             'dateFilter' => $dateFilter]);

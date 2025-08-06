@@ -3,6 +3,7 @@
 namespace App\Controller\Reports;
 
 use App\Controller\Dto\Report;
+use App\Entity\Merchant;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReportsController extends AbstractController
 {
     #[Route('/reports/{id}', name: 'app_reports')]
-    public function reports(int $id): Response
+    public function reports(int $id, Merchant $merchant): Response
     {
         $reportCategories = [
                 'OUTLET' => [
@@ -102,6 +103,7 @@ class ReportsController extends AbstractController
         ];
 
         return $this->render('reports/reports_dashboard.html.twig', [
+            'merchant' => $merchant,
             'reportCategories' => $reportCategories,
             'outletId' => $id
         ]);

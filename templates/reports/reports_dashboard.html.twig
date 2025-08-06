@@ -163,7 +163,7 @@
 
 {% block breadcrumb %}
     <div class="breadcrumb-item">
-        <a href="{{ path('app_reports', {'id': outletId}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
+        <a href="{{ path('app_reports', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Reports</a>
         <span class="breadcrumb-separator"></span>
     </div>
 {% endblock %}
@@ -318,7 +318,7 @@
                                         <button class="btn-generate">Generate Report</button>
                                         {% if reportData.route is defined %}
                                             {# Pass the outletId in the params #}
-                                            {% set params = reportData.params|merge({'id': outletId}) %}
+                                            {% set params = reportData.params|merge({'id': merchant.id}) %}
                                             <a href="{{ path(reportData.route, params) }}" class="btn-view">
                                                 <i class="fas fa-eye"></i> View
                                             </a>

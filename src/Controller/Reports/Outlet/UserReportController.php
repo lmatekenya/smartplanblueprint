@@ -2,50 +2,37 @@
 
 namespace App\Controller\Reports\Outlet;
 
+use App\Entity\Merchant;
+use App\Entity\Reports\Outlet\ReportUser;
+use App\Repository\Reports\Outlet\ReportUserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+#[Route('/merchant')]
 class UserReportController extends AbstractController
 {
-    #[Route('/user', name: 'app_user_report')]
-    public function index(Request $request): Response{
-        // Sample data
-        $transactions = [
-            [
-                'id' => '2025-07-16 00:07:31',
-                'username' => 'Test User',
-                'sale_value' => 3420.00,
-            ],
-        ];
+    #[Route('outlet/{id}/user', name: 'app_user_report')]
+    public function users(Request $request, Merchant $merchant, ReportUserRepository $reportUserRepository): Response{
 
-        // Get filters from request
         $dateFilter = $request->query->get('date');
+        $startDateFilter = $request->query->get('startDate');
+        $endDateFilter = $request->query->get('endDate');
         $detailFilter = $request->query->get('detail');
 
-        // Apply filters
-        $filteredTransactions = $transactions;
-
-        if ($dateFilter) {
-            $filteredTransactions = array_filter($filteredTransactions, function($txn) use ($dateFilter) {
-                $txnDate = date('Y-m-d', strtotime($txn['date_time']));
-                return $txnDate === $dateFilter;
-            });
-        }
-
-        if ($detailFilter) {
-            $filteredTransactions = array_filter($filteredTransactions, function($txn) use ($detailFilter) {
-                return stripos($txn['detail'], $detailFilter) !== false;
-            });
-        }
-
+        $users = $reportUserRepository->findByFilters(
+            $merchant->getId(),
+            $dateFilter,
+            $detailFilter
+        );
         // Summary calculations
-        $total = array_reduce($filteredTransactions, function($carry, $txn) {
-            return $carry + $txn['sale_value']; // Simply sum all sale values
+        $total = array_reduce($users, function($carry, $users) {
+            return $carry + (float)$users->getSaleValue();
         }, 0);
 
         return $this->render('reports/outlet_reports/user_report.html.twig',[
-            'transactions' => $filteredTransactions,
+            'merchant' => $merchant,
+            'users' => $users,
             'total' => $total,
             'detailFilter' => $detailFilter,
             'dateFilter' => $dateFilter]);
