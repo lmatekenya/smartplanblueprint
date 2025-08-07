@@ -56,10 +56,12 @@ jobs:
                   php-version: '8.2'
                   tools: composer:v2
 
-            - name: 📦 Install dependencies
-              run: |
-                  composer install --no-dev --optimize-autoloader --no-interaction
-                  composer dump-autoload --optimize --no-dev --classmap-authoritative
+            -   name: 📦 Install dependencies
+                run: |
+                    composer update --lock
+                    composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-http --ignore-platform-req=ext-cassandra
+                    composer dump-autoload --optimize --no-dev --classmap-authoritative
+
 
             - name: 🛠️ Prepare production environment
               run: |
