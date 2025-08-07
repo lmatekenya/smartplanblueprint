@@ -65,8 +65,8 @@ jobs:
                   composer require symfony/dotenv:^6.0 --no-update
                   # Update other Symfony packages to v6
                   grep -o '"symfony/[^"]*":.*7\.3\.\*' composer.json | sed 's/:.*/:^6.0/' | xargs -I{} composer require {} --no-update
-                  # Install all dependencies
-                  composer install --no-dev --optimize-autoloader
+                  # Update and install all dependencies
+                  composer update --no-dev --optimize-autoloader
 
 #            - name: 🛠️ Configure Environment
 #              run: |
@@ -97,6 +97,8 @@ jobs:
                   php bin/console cache:clear --env=prod --no-debug
                   php bin/console cache:warmup --env=prod --no-debug
 
+                          - name: 🗃️ Run Database Migrations
+              run: |
                   # Only if database exists
                   php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration
 
