@@ -56,56 +56,56 @@ jobs:
                   extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
                   coverage: none
 
-            - name: 📦 Install Dependencies
-              run: |
-                  # Downgrade Symfony packages to a version compatible with PHP 8.0
-                  composer require symfony/flex:^2.0 --no-update
-                  composer require symfony/framework-bundle:^6.0 --no-update
-                  composer require symfony/runtime:^6.0 --no-update
-                  composer require symfony/dotenv:^6.0 --no-update
-                  # Update other Symfony packages to v6
-                  grep -o '"symfony/[^"]*":.*7\.3\.\*' composer.json | sed 's/:.*/:^6.0/' | xargs -I{} composer require {} --no-update
-                  # Update and install all dependencies
-                  composer update --no-dev --optimize-autoloader
-
-#            - name: 🛠️ Configure Environment
+#            - name: 📦 Install Dependencies
 #              run: |
-#                  echo "APP_ENV=prod" > .env
-#                  echo "APP_DEBUG=0" >> .env
-#                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-#                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+#                  # Downgrade Symfony packages to a version compatible with PHP 8.0
+#                  composer require symfony/flex:^2.0 --no-update
+#                  composer require symfony/framework-bundle:^6.0 --no-update
+#                  composer require symfony/runtime:^6.0 --no-update
+#                  composer require symfony/dotenv:^6.0 --no-update
+#                  # Update other Symfony packages to v6
+#                  grep -o '"symfony/[^"]*":.*7\.3\.\*' composer.json | sed 's/:.*/:^6.0/' | xargs -I{} composer require {} --no-update
+#                  # Update and install all dependencies
+#                  composer update --no-dev --optimize-autoloader
 
-
-            -   name: 🛠️ Configure Environment
-                run: |
-                    # Copy production environment file
-                    cp .env.prod .env
-
-                    # Append or override with secrets
-                    echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" >> .env
-                    echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-
-                    # Ensure production settings
-                    sed -i "s/APP_ENV=.*/APP_ENV=prod/" .env
-                    sed -i "s/APP_DEBUG=.*/APP_DEBUG=0/" .env
-
-                    # Optional: Dump env for better performance
-                    composer dump-env prod
-
-            - name: 🧹 Clear and Warmup Cache
+            - name: 🛠️ Configure Environment
               run: |
-                  php bin/console cache:clear --env=prod --no-debug
-                  php bin/console cache:warmup --env=prod --no-debug
+                  echo "APP_ENV=prod" > .env
+                  echo "APP_DEBUG=0" >> .env
+                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
 
-                          - name: 🗃️ Run Database Migrations
-              run: |
-                  # Only if database exists
-                  php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration
 
-            - name: 🛠️ Fix Permissions
-              run: |
-                  chmod -R 755 var
-                  chmod -R 755 public
+#            -   name: 🛠️ Configure Environment
+#                run: |
+#                    # Copy production environment file
+#                    cp .env.prod .env
+#
+#                    # Append or override with secrets
+#                    echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" >> .env
+#                    echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+#
+#                    # Ensure production settings
+#                    sed -i "s/APP_ENV=.*/APP_ENV=prod/" .env
+#                    sed -i "s/APP_DEBUG=.*/APP_DEBUG=0/" .env
+#
+#                    # Optional: Dump env for better performance
+#                    composer dump-env prod
+
+#            - name: 🧹 Clear and Warmup Cache
+#              run: |
+#                  php bin/console cache:clear --env=prod --no-debug
+#                  php bin/console cache:warmup --env=prod --no-debug
+#
+#                          - name: 🗃️ Run Database Migrations
+#              run: |
+#                  # Only if database exists
+#                  php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration
+
+#            - name: 🛠️ Fix Permissions
+#              run: |
+#                  chmod -R 755 var
+#                  chmod -R 755 public
 
             - name: 📤 Deploy via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
