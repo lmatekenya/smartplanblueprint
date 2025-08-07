@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /diagnostic.php
+Disallow: /_profiler/
+Disallow: /_wdt/
+Allow: /
