@@ -34,96 +34,65 @@
 #                  retries: 3
 #                  retryDelay: 10
 
-name: 🚀 Deploy to smartplanblueprint.fwh.is
+name: 🚀 Deploy Symfony to InfinityFree
 
 on:
     push:
-        branches: [ main, smartplan ]
+        branches: [main, smartplan]
     workflow_dispatch:
 
 jobs:
     deploy:
-        name: 🎉 Deploy to InfinityFree
+        name: 🎉 Deploy to smartplanblueprint.fwh.is
         runs-on: ubuntu-latest
+
         steps:
-            - name: 🚚 Get latest code
+            - name: 🚚 Checkout code
               uses: actions/checkout@v4
 
             - name: 🐘 Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: '8.0'
-                  extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, bcmath
-                  coverage: none
+                  php-version: '8.2'
+                  tools: composer:v2
 
-#            - name: 📦 Install Dependencies
-#              run: |
-#                  # Downgrade Symfony packages to a version compatible with PHP 8.0
-#                  composer require symfony/flex:^2.0 --no-update
-#                  composer require symfony/framework-bundle:^6.0 --no-update
-#                  composer require symfony/runtime:^6.0 --no-update
-#                  composer require symfony/dotenv:^6.0 --no-update
-#                  # Update other Symfony packages to v6
-#                  grep -o '"symfony/[^"]*":.*7\.3\.\*' composer.json | sed 's/:.*/:^6.0/' | xargs -I{} composer require {} --no-update
-#                  # Update and install all dependencies
-#                  composer update --no-dev --optimize-autoloader
-
-            - name: 🛠️ Configure Environment
+            - name: 📦 Install dependencies
               run: |
+                  composer install --no-dev --optimize-autoloader --no-interaction
+                  composer dump-autoload --optimize --no-dev --classmap-authoritative
+
+            - name: 🛠️ Prepare production environment
+              run: |
+                  # Create fresh .env file from secrets
                   echo "APP_ENV=prod" > .env
                   echo "APP_DEBUG=0" >> .env
                   echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
                   echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
 
+                  # Production optimizations
+                  php bin/console cache:clear --env=prod --no-debug
+                  php bin/console cache:warmup --env=prod --no-debug
 
-#            -   name: 🛠️ Configure Environment
-#                run: |
-#                    # Copy production environment file
-#                    cp .env.prod .env
-#
-#                    # Append or override with secrets
-#                    echo "DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"" >> .env
-#                    echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-#
-#                    # Ensure production settings
-#                    sed -i "s/APP_ENV=.*/APP_ENV=prod/" .env
-#                    sed -i "s/APP_DEBUG=.*/APP_DEBUG=0/" .env
-#
-#                    # Optional: Dump env for better performance
-#                    composer dump-env prod
+                  # Fix directory structure
+                  mkdir -p var/cache/prod var/log
+                  chmod -R 755 var public
 
-#            - name: 🧹 Clear and Warmup Cache
-#              run: |
-#                  php bin/console cache:clear --env=prod --no-debug
-#                  php bin/console cache:warmup --env=prod --no-debug
-#
-#                          - name: 🗃️ Run Database Migrations
-#              run: |
-#                  # Only if database exists
-#                  php bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration
-
-#            - name: 🛠️ Fix Permissions
-#              run: |
-#                  chmod -R 755 var
-#                  chmod -R 755 public
-
-            - name: 📤 Deploy via FTP
+            - name: 📂 Sync files via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
                   server: ftpupload.net
                   username: ${{ secrets.FTP_Username }}
                   password: ${{ secrets.FTP_Password }}
                   server-dir: smartplanblueprint.fwh.is/htdocs/
-                  retries: 5
-                  retryDelay: 20
+                  local-dir: ./
                   exclude: |
-                      **/.git*
-                      **/.github/**
-                      **/tests/**
-                      **/var/cache/**
-                      **/var/log/**
-                      composer.*
-                      symfony.lock
-                      phpunit.*
+                      .git/
+                      .github/
                       .env.local
-                      .env.test
+                      docker-compose*
+                      phpunit*
+                      tests/
+                      var/cache/*
+                      var/log/*
+                  retries: 3
+                  retry-delay: 10000
