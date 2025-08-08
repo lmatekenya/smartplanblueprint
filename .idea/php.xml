@@ -56,7 +56,6 @@
       <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
       <path value="$PROJECT_DIR$/vendor/league/uri-interfaces" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
-      <path value="$PROJECT_DIR$/vendor/league/uri-components" />
       <path value="$PROJECT_DIR$/vendor/masterminds/html5" />
       <path value="$PROJECT_DIR$/vendor/symfony/browser-kit" />
       <path value="$PROJECT_DIR$/vendor/symfony/dependency-injection" />
@@ -123,7 +122,6 @@
       <path value="$PROJECT_DIR$/vendor/amphp/byte-stream" />
       <path value="$PROJECT_DIR$/vendor/amphp/sync" />
       <path value="$PROJECT_DIR$/vendor/amphp/socket" />
-      <path value="$PROJECT_DIR$/vendor/amphp/pipeline" />
       <path value="$PROJECT_DIR$/vendor/kelunik/certificate" />
       <path value="$PROJECT_DIR$/vendor/amphp/parser" />
       <path value="$PROJECT_DIR$/vendor/amphp/serialization" />
@@ -134,7 +132,6 @@
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/vendor/egulias/email-validator" />
       <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
-      <path value="$PROJECT_DIR$/vendor/revolt/event-loop" />
       <path value="$PROJECT_DIR$/vendor/myclabs/deep-copy" />
       <path value="$PROJECT_DIR$/vendor/daverandom/libdns" />
       <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
@@ -150,6 +147,8 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
       <path value="$PROJECT_DIR$/vendor/doctrine/lexer" />
       <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/vendor/league/uri-parser" />
+      <path value="$PROJECT_DIR$/vendor/amphp/windows-registry" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">
