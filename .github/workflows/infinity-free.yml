@@ -124,7 +124,7 @@ jobs:
                   php-version: '8.2'
                   tools: composer:v2
                   # Only include actually available extensions
-                  extensions: mbstring, pdo_mysql, tokenizer, xml, ctype, iconv
+                  extensions: mbstring, pdo_mysql, tokenizer, xml, ctype, iconv, raphf, propro, pecl_http, php_http.dll, php_cassandra.dll, cassandra, http
                   coverage: none
 
             - name: 📦 Install dependencies
