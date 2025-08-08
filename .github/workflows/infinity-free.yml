@@ -34,73 +34,73 @@
 #                  retries: 3
 #                  retryDelay: 10
 
-#
-#name: 🚀 Deploy Symfony to InfinityFree
-#
-#on:
-#    push:
-#        branches: [main, smartplan]
-#    workflow_dispatch:
-#
-#jobs:
-#    deploy:
-#        name: 🎉 Deploy to smartplanblueprint.fwh.is
-#        runs-on: ubuntu-latest
-#
-#        steps:
-#            - name: 🚚 Checkout code
-#              uses: actions/checkout@v4
-#
-#            - name: 🐘 Setup PHP
-#              uses: shivammathur/setup-php@v2
-#              with:
-#                  php-version: '8.2'
-#                  tools: composer:v2
-#                  # Install required extensions
-#                  extensions: raphf, propro, pecl_http
-#                  coverage: none
-#
-#            - name: 📦 Install dependencies
-#              run: |
-#                  # Ignore missing extensions during install
-#                  composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-http --ignore-platform-req=ext-cassandra
-#                  composer dump-autoload --optimize --no-dev --classmap-authoritative
-#
-#            - name: 🛠️ Prepare production environment
-#              run: |
-#                  # Create fresh .env file from secrets
-#                  echo "APP_ENV=prod" > .env
-#                  echo "APP_DEBUG=0" >> .env
-#                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-#                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-#
-#                  # Production optimizations
-#                  php bin/console cache:clear --env=prod --no-debug
-#                  php bin/console cache:warmup --env=prod --no-debug
-#
-#                  # Fix directory structure
-#                  mkdir -p var/cache/prod var/log
-#                  chmod -R 755 var public
-#
-#            - name: 📂 Sync files via FTP
-#              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-#              with:
-#                  server: ftpupload.net
-#                  username: ${{ secrets.FTP_Username }}
-#                  password: ${{ secrets.FTP_Password }}
-#                  server-dir: smartplanblueprint.fwh.is/htdocs/
-#                  local-dir: ./
-#                  exclude: |
-#                      .git/
-#                      .github/
-#                      .env.local
-#                      docker-compose*
-#                      phpunit*
-#                      tests/
-#                      var/cache/*
-#                      var/log/*
-#                  retries: 3
-#                  retry-delay: 10000
+
+name: 🚀 Deploy Symfony to InfinityFree
+
+on:
+    push:
+        branches: [main, smartplan]
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        name: 🎉 Deploy to smartplanblueprint.fwh.is
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 🚚 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🐘 Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  tools: composer:v2
+                  # Install required extensions
+                  extensions: raphf, propro, pecl_http, php_http.dll, php_cassandra.dll, cassandra, http
+                  coverage: none
+
+            - name: 📦 Install dependencies
+              run: |
+                  # Ignore missing extensions during install
+                  composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-http --ignore-platform-req=ext-cassandra
+                  composer dump-autoload --optimize --no-dev --classmap-authoritative
+
+            - name: 🛠️ Prepare production environment
+              run: |
+                  # Create fresh .env file from secrets
+                  echo "APP_ENV=prod" > .env
+                  echo "APP_DEBUG=0" >> .env
+                  echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+                  echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+
+                  # Production optimizations
+                  php bin/console cache:clear --env=prod --no-debug
+                  php bin/console cache:warmup --env=prod --no-debug
+
+                  # Fix directory structure
+                  mkdir -p var/cache/prod var/log
+                  chmod -R 755 var public
+
+            - name: 📂 Sync files via FTP
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+              with:
+                  server: ftpupload.net
+                  username: ${{ secrets.FTP_Username }}
+                  password: ${{ secrets.FTP_Password }}
+                  server-dir: smartplanblueprint.fwh.is/htdocs/
+                  local-dir: ./
+                  exclude: |
+                      .git/
+                      .github/
+                      .env.local
+                      docker-compose*
+                      phpunit*
+                      tests/
+                      var/cache/*
+                      var/log/*
+                  retries: 3
+                  retry-delay: 10000
 
 
 name: 🚀 Deploy Symfony to InfinityFree
@@ -130,8 +130,7 @@ jobs:
             - name: 📦 Install dependencies
               run: |
                   # Install dev dependencies first for cache:clear
-#                  composer install --optimize-autoloader --no-interaction
-                  composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-http --ignore-platform-req=ext-cassandra
+                  composer install --optimize-autoloader --no-interaction
 
                   # Prepare production environment
                   echo "APP_ENV=prod" > .env
