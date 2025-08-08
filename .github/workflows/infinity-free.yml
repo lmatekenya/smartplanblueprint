@@ -130,7 +130,8 @@ jobs:
             - name: 📦 Install dependencies
               run: |
                   # Install dev dependencies first for cache:clear
-                  composer install --optimize-autoloader --no-interaction
+#                  composer install --optimize-autoloader --no-interaction
+                  composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-http --ignore-platform-req=ext-cassandra
 
                   # Prepare production environment
                   echo "APP_ENV=prod" > .env
