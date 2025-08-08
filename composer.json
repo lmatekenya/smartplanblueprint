@@ -15,7 +15,7 @@
         "doctrine/orm": "^3.5.1",
         "phpdocumentor/reflection-docblock": "^5.6.2",
         "phpstan/phpdoc-parser": "^2.2",
-        "symfony/amphp-http-client-meta": "^2.0",
+        "symfony/amphp-http-client-meta": "^1.0",
         "symfony/asset": "7.3.*",
         "symfony/asset-mapper": "7.3.*",
         "symfony/console": "7.3.*",
@@ -47,7 +47,10 @@
         "symfony/yaml": "7.3.*",
         "twig/extra-bundle": "^2.12|^3.21",
         "twig/twig": "^2.12|^3.21.1",
-        "ext-bcmath": "*"
+        "ext-bcmath": "*",
+        "ext-http": "*",
+        "ext-cassandra":"*"
+
     },
     "config": {
         "allow-plugins": {
