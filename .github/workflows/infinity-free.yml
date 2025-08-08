@@ -143,7 +143,7 @@ jobs:
                   php bin/console cache:warmup --no-debug
 
                   # Install production dependencies ignoring Cassandra requirement
-                  composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-cassandra
+                  composer install --no-dev --optimize-autoloader --no-interaction
                   composer dump-autoload --optimize --no-dev --classmap-authoritative
 
             - name: 🛠️ Fix directory permissions
