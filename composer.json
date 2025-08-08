@@ -48,8 +48,7 @@
         "twig/extra-bundle": "^2.12|^3.21",
         "twig/twig": "^2.12|^3.21.1",
         "ext-bcmath": "*",
-        "ext-http": "*",
-        "ext-cassandra":"*",
+
         "ext-json": "*",
         "ext-pdo": "*"
 
