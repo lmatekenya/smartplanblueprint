@@ -61,7 +61,7 @@ class CommissionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?: '0.00';
+        return (float) ($result ?? 0);
     }
 
 }

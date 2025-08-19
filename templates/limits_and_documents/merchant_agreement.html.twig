@@ -284,11 +284,142 @@
         .view-btn i {
             font-size: 0.9rem; /* Slightly smaller icon for better proportion */
         }
+
+        .upload-success-badge {
+            margin-left: 10px;
+            padding: 2px 8px;
+            background-color: var(--dashboard-secondary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .upload-success-badge i {
+            font-size: 0.7rem;
+        }
+
+
+        /*modal styles*/
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background-color: var(--dashboard-white);
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-body {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+            min-height: 0; /* Fix for flexbox in some browsers */
+        }
+
+        #documentViewer {
+            flex: 2;
+            width: 100%;
+            height: 60vh;
+            background: #f8f9fa;
+            border: 1px solid var(--dashboard-medium-gray);
+        }
+
+        #documentInfo {
+            flex: 1;
+            padding: 15px;
+            background: var(--dashboard-light);
+            border-radius: 4px;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            color: var(--dashboard-dark-gray);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: var(--dashboard-tertiary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--dashboard-medium-gray);
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+            }
+
+            .modal-body {
+                flex-direction: column;
+            }
+
+            #documentViewer {
+                height: 40vh;
+            }
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="commission-dashboard">
+
+
+        {# Document Viewer Modal #}
+        <div id="documentModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3 id="modalTitle">Document Viewer</h3>
+                <div class="modal-body">
+                    <iframe id="documentViewer" frameborder="0"></iframe>
+                    <div id="documentInfo">
+                        <p><strong>Filename:</strong> <span id="docFilename"></span></p>
+                        <p><strong>Uploaded:</strong> <span id="docUploadDate"></span></p>
+                        <p><strong>Type:</strong> <span id="docType"></span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="downloadDoc" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-secondary close-modal">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
         <div class="dashboard-header">
             <h1>Merchant Agreement</h1>
             <div class="header-actions">
@@ -375,7 +506,7 @@
                     <div class="agreement-item">
                         <span>Active Services</span>
                         <span class="count">{{ agreementCounts.view }}</span>
-                        <button class="view-btn" title="View">
+                        <button class="view-btn" title="View" data-merchant-id="{{ merchant.id }}" data-doc-type="view">
                             <i class="fas fa-street-view"></i>
                         </button>
 
@@ -425,23 +556,100 @@
             //     alert('Export functionality would be implemented here');
             // });
 
-            // Add animation to cards when they come into view
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
+            // // Add animation to cards when they come into view
+            // const observer = new IntersectionObserver((entries) => {
+            //     entries.forEach(entry => {
+            //         if (entry.isIntersecting) {
+            //             entry.target.style.opacity = 1;
+            //             entry.target.style.transform = 'translateY(0)';
+            //         }
+            //     });
+            // }, { threshold: 0.1 });
+            //
+            // document.querySelectorAll('.commission-card, .agreement-card').forEach(card => {
+            //     card.style.opacity = 0;
+            //     card.style.transform = 'translateY(20px)';
+            //     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            //     observer.observe(card);
+            // });
 
-            document.querySelectorAll('.commission-card, .agreement-card').forEach(card => {
-                card.style.opacity = 0;
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
+            document.querySelectorAll('.upload-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.agreement-card');
+                    const cardTitle = card.querySelector('h3').textContent;
+                    const merchantId = {{ merchant.id }};
+
+                    // Use Twig's path() function to generate the upload URL
+                    const uploadUrl = "{{ path('upload_merchant_document', {'id': merchant.id}) }}";
+
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = '.pdf,.jpg,.jpeg,.png';
+                    fileInput.style.display = 'none';
+
+                    fileInput.addEventListener('change', async function() {
+                        if (this.files && this.files[0]) {
+                            const file = this.files[0];
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('type', cardTitle);
+
+                            try {
+                                // Show loading indicator
+                                const originalText = button.innerHTML;
+                                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                                button.disabled = true;
+
+                                // Use the generated upload URL
+                                const response = await fetch(uploadUrl, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                const data = await response.json();
+
+                                if (data.success) {
+                                    // Update UI to show successful upload
+                                    const successBadge = document.createElement('span');
+                                    successBadge.className = 'upload-success-badge';
+                                    successBadge.innerHTML = '<i class="fas fa-check-circle"></i> Uploaded';
+                                    card.querySelector('.agreement-item').appendChild(successBadge);
+
+                                    // Use Twig's path() for the counts URL
+                                    const countsUrl = "{{ path('merchant_document_counts', {'id': merchant.id}) }}";
+                                    await refreshDocumentCounts(countsUrl);
+                                } else {
+                                    alert(`Upload failed: ${data.error || 'Unknown error'}`);
+                                }
+                            } catch (error) {
+                                console.error('Upload error:', error);
+                                alert('Upload failed. Please try again.');
+                            } finally {
+                                button.innerHTML = originalText;
+                                button.disabled = false;
+                            }
+                        }
+                    });
+
+                    document.body.appendChild(fileInput);
+                    fileInput.click();
+                    document.body.removeChild(fileInput);
+                });
             });
 
+            async function refreshDocumentCounts(countsUrl) {
+                try {
+                    const response = await fetch(countsUrl);
+                    const counts = await response.json();
+
+                    // Update the counts in the UI
+                    document.querySelector('.agreement-card:nth-child(1) .count').textContent = counts.view;
+                    document.querySelector('.agreement-card:nth-child(2) .count').textContent = counts.registration;
+                    document.querySelector('.agreement-card:nth-child(3) .count').textContent = counts.affidavit;
+                } catch (error) {
+                    console.error('Failed to refresh counts:', error);
+                }
+            }
 
             // Export button functionality
             document.querySelector('.btn-primary').addEventListener('click', function() {
@@ -691,53 +899,160 @@
                 doc.save(`Commission_Report_${new Date().toISOString().slice(0,10)}.pdf`);
             }
 
+        // // Upload button functionality
+        // document.querySelectorAll('.upload-btn').forEach(button => {
+        //     button.addEventListener('click', function() {
+        //         // Create a file input element
+        //         const fileInput = document.createElement('input');
+        //         fileInput.type = 'file';
+        //         fileInput.style.display = 'none';
+        //
+        //         // Determine which type of document we're uploading based on the card title
+        //         const cardTitle = this.closest('.agreement-card').querySelector('h3').textContent;
+        //
+        //         fileInput.addEventListener('change', function() {
+        //             if (this.files && this.files[0]) {
+        //                 //Handling the file upload
+        //                 //Using AJAX to send it to the server
+        //                 alert(`Uploading ${this.files[0].name} for ${cardTitle}`);
+        //
+        //                 // You would typically have an AJAX call here like:
+        //
+        //                 const formData = new FormData();
+        //                 formData.append('file', this.files[0]);
+        //                 formData.append('type', cardTitle);
+        //
+        //                 fetch('/upload-endpoint', {
+        //                     method: 'POST',
+        //                     body: formData
+        //                 })
+        //                 .then(response => response.json())
+        //                 .then(data => {
+        //                     // Handle successful upload
+        //                     console.log('Upload successful:', data);
+        //                 })
+        //                 .catch(error => {
+        //                     // Handle error
+        //                     console.error('Upload error:', error);
+        //                 });
+        //
+        //             }
+        //         });
+        //
+        //         document.body.appendChild(fileInput);
+        //         fileInput.click();
+        //         document.body.removeChild(fileInput);
+        //     });
+        // });
 
+            // Document Viewer Modal Functionality
+            {#const modal = document.getElementById('documentModal');#}
+            {#const documentViewer = document.getElementById('documentViewer');#}
+            {#const closeButtons = document.querySelectorAll('.close-modal');#}
+            {#const downloadBtn = document.getElementById('downloadDoc');#}
+            {#let currentDocumentUrl = '';#}
 
-        // Upload button functionality
-        document.querySelectorAll('.upload-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // Create a file input element
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.style.display = 'none';
+            {#// View button click handler#}
+            {#document.querySelectorAll('.view-btn').forEach(button => {#}
+            {#    button.addEventListener('click', function(e) {#}
+            {#        e.preventDefault();#}
+            {#        const card = this.closest('.agreement-card');#}
+            {#        const cardTitle = card.querySelector('h3').textContent;#}
+            {#        const merchantId = {{ merchant.id }};#}
 
-                // Determine which type of document we're uploading based on the card title
-                const cardTitle = this.closest('.agreement-card').querySelector('h3').textContent;
+            {#        // Determine document type based on card title#}
+            {#        let docType = '';#}
+            {#        if (cardTitle.includes('Agreement')) docType = 'view';#}
+            {#        else if (cardTitle.includes('Omang')) docType = 'registration';#}
+            {#        else if (cardTitle.includes('Affidavit')) docType = 'affidavit';#}
 
-                fileInput.addEventListener('change', function() {
-                    if (this.files && this.files[0]) {
-                        //Handling the file upload
-                        //Using AJAX to send it to the server
-                        alert(`Uploading ${this.files[0].name} for ${cardTitle}`);
+            {#        // Fetch document data#}
+            {#        fetch(`/merchant/${merchantId}/document-info?type=${docType}`)#}
+            {#            .then(response => response.json())#}
+            {#            .then(data => {#}
+            {#                if (data.url) {#}
+            {#                    currentDocumentUrl = data.url;#}
+            {#                    documentViewer.src = data.url;#}
+            {#                    document.getElementById('modalTitle').textContent = cardTitle;#}
+            {#                    document.getElementById('docFilename').textContent = data.filename;#}
+            {#                    document.getElementById('docUploadDate').textContent = new Date(data.uploadedAt).toLocaleString();#}
+            {#                    document.getElementById('docType').textContent = cardTitle;#}
+            {#                    modal.style.display = 'block';#}
+            {#                } else {#}
+            {#                    alert('No document found for this category');#}
+            {#                }#}
+            {#            })#}
+            {#            .catch(error => {#}
+            {#                console.error('Error fetching document:', error);#}
+            {#                alert('Error loading document');#}
+            {#            });#}
+            {#    });#}
+            {#});#}
 
-                        // You would typically have an AJAX call here like:
+            // Document Viewer Modal Functionality
+            const modal = document.getElementById('documentModal');
+            const documentViewer = document.getElementById('documentViewer');
+            const closeButtons = document.querySelectorAll('.close-modal');
+            const downloadBtn = document.getElementById('downloadDoc');
+            let currentDocumentUrl = '';
 
-                        const formData = new FormData();
-                        formData.append('file', this.files[0]);
-                        formData.append('type', cardTitle);
+// View button click handler
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const merchantId = this.getAttribute('data-merchant-id');
+                    const docType = this.getAttribute('data-doc-type');
 
-                        fetch('/upload-endpoint', {
-                            method: 'POST',
-                            body: formData
-                        })
+                    // Fetch document data
+                    fetch(`/merchant/${merchantId}/document-info?type=${docType}`)
                         .then(response => response.json())
                         .then(data => {
-                            // Handle successful upload
-                            console.log('Upload successful:', data);
+                            if (data.url) {
+                                currentDocumentUrl = data.url;
+                                documentViewer.src = data.url;
+                                document.getElementById('modalTitle').textContent = this.closest('.agreement-card').querySelector('h3').textContent;
+                                document.getElementById('docFilename').textContent = data.filename;
+                                document.getElementById('docUploadDate').textContent = new Date(data.uploadedAt).toLocaleString();
+                                document.getElementById('docType').textContent = data.type;
+                                modal.style.display = 'block';
+                            } else {
+                                alert('No document found for this category');
+                            }
                         })
                         .catch(error => {
-                            // Handle error
-                            console.error('Upload error:', error);
+                            console.error('Error fetching document:', error);
+                            alert('Error loading document');
                         });
-
-                    }
                 });
-
-                document.body.appendChild(fileInput);
-                fileInput.click();
-                document.body.removeChild(fileInput);
             });
-        });
+
+            // Close modal handlers
+            closeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    documentViewer.src = '';
+                });
+            });
+
+            // Download button handler
+            downloadBtn.addEventListener('click', function() {
+                if (currentDocumentUrl) {
+                    const a = document.createElement('a');
+                    a.href = currentDocumentUrl;
+                    a.download = document.getElementById('docFilename').textContent;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            });
+
+            // Close modal when clicking outside content
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    documentViewer.src = '';
+                }
+            });
         });
     </script>
 {% endblock %}

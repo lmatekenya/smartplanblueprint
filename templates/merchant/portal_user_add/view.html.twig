@@ -1,6 +1,193 @@
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}View User - {{ user.name }}{% endblock %}#}
+
+{#{% block body %}#}
+{#    <div class="merchant-container">#}
+{#        <div class="merchant-header">#}
+{#            <div class="header-content">#}
+{#                <h2 class="merchant-title">USER DETAILS</h2>#}
+{#                <div class="merchant-name">Merchant: <strong>{{ merchant.name }}</strong></div>#}
+{#            </div>#}
+{#        </div>#}
+
+{#        <div class="info-card">#}
+{#            <table class="info-table">#}
+{#                <tr>#}
+{#                    <th>Name</th>#}
+{#                    <td>{{ user.name }}</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <th>Email</th>#}
+{#                    <td>{{ user.email }}</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <th>Roles</th>#}
+{#                    <td>{{ user.roles|join(', ') }}</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <th>Status</th>#}
+{#                    <td>{{ user.enabled ? 'Active' : 'Inactive' }}</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <th>Date Created</th>#}
+{#                    <td>{{ user.date_created|date('Y-m-d H:i') }}</td>#}
+{#                </tr>#}
+{#            </table>#}
+
+{#            <div class="action-btns" style="margin-top: 20px;">#}
+{#                <a href="{{ path('edit_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-edit">#}
+{#                    <i class="fas fa-edit"></i> Edit#}
+{#                </a>#}
+{#                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="action-btn btn-view">#}
+{#                    <i class="fas fa-arrow-left"></i> Back to Users#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+
+
 {% extends 'base.html.twig' %}
 
 {% block title %}View User - {{ user.name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+
+        /* Header Styles */
+        /*.merchant-header {*/
+        /*    background: linear-gradient(135deg, #6e8efb, #a777e3);*/
+        /*    color: white;*/
+        /*    padding: 20px;*/
+        /*    border-radius: 8px 8px 0 0;*/
+        /*    box-shadow: 0 2px 10px rgba(0,0,0,0.1);*/
+        /*    margin-bottom: 20px;*/
+        /*}*/
+
+        .merchant-header {
+            background: linear-gradient(135deg, #ffffff, #fcfaff);
+            color: #333; /* Darker text for better contrast on light background */
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow to match */
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05); /* Subtle border for definition */
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .merchant-title {
+            margin: 0;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .merchant-name {
+            font-size: 16px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        /* Collapsible Section Styles */
+        .collapsible-section {
+            margin-bottom: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .collapsible-header {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #dee2e6;
+            font-weight: 500;
+        }
+
+        .collapsible-header:hover {
+            background-color: #e9ecef;
+        }
+
+        .collapsible-content {
+            padding: 15px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+
+        .collapsible-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-header.active .collapsible-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Existing table styles */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table th, .info-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-table th {
+            width: 30%;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        /* Existing button styles */
+        .action-btns {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #3e8e41;
+        }
+
+        .btn-view {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #5a6268;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="merchant-container">
@@ -12,30 +199,51 @@
         </div>
 
         <div class="info-card">
-            <table class="info-table">
-                <tr>
-                    <th>Name</th>
-                    <td>{{ user.name }}</td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td>{{ user.email }}</td>
-                </tr>
-                <tr>
-                    <th>Roles</th>
-                    <td>{{ user.roles|join(', ') }}</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>{{ user.enabled ? 'Active' : 'Inactive' }}</td>
-                </tr>
-                <tr>
-                    <th>Date Created</th>
-                    <td>{{ user.date_created|date('Y-m-d H:i') }}</td>
-                </tr>
-            </table>
+            <!-- Basic Information Section -->
+            <div class="collapsible-section">
+                <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                    <span>Basic Information</span>
+                    <span class="collapsible-arrow">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <table class="info-table">
+                        <tr>
+                            <th>Name(s)</th>
+                            <td>{{ user.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 
-            <div class="action-btns" style="margin-top: 20px;">
+            <!-- Account Details Section -->
+            <div class="collapsible-section">
+                <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                    <span>Account Details</span>
+                    <span class="collapsible-arrow">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <table class="info-table">
+                        <tr>
+                            <th>Role</th>
+                            <td>{{ user.roles|join(', ') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>{{ user.enabled ? 'Active' : 'Inactive' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date Created</th>
+                            <td>{{ user.date_created|date('Y-m-d H:i') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="action-btns">
                 <a href="{{ path('edit_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-edit">
                     <i class="fas fa-edit"></i> Edit
                 </a>
@@ -45,4 +253,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleCollapsible(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Initialize all collapsible sections
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                header.classList.add('active');
+                header.nextElementSibling.style.display = 'block';
+            });
+        });
+    </script>
 {% endblock %}

@@ -182,7 +182,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractController
 {
-    private TransactionRepository $transactionRepository;
+//    private TransactionRepository $transactionRepository;
 
     public function __construct(TransactionRepository $transactionRepository)
     {

@@ -181,13 +181,13 @@
                 <div class="action-dropdown">
                     <select class="action-select" id="actionSelect" onchange="handleFilterChange(this)">
                         <option value="">Filter By</option>
-                        <option value="{{ path('app_financials', {'id': merchant.id}) }}" selected>Sales</option>
-                        <option value="{{ path('financials_commission', {'id': merchant.id}) }}">Commission</option>
-                        <option value="{{ path('financials_deposits', {'id': merchant.id}) }}">Deposits</option>
-                        <option value="{{ path('financials_reversals', {'id': merchant.id}) }}">Reversals</option>
-                        <option value="{{ path('financials_withdrawals', {'id': merchant.id}) }}">Withdrawals</option>
-                        <option value="{{ path('financials_transfers', {'id': merchant.id}) }}">Transfers</option>
-                        <option value="{{ path('financials_summary', {'id': merchant.id}) }}">Summary</option>
+                        <option value="{{ path('app_financials', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'app_financials' ? 'selected' : '' }}>Sales</option>
+                        <option value="{{ path('financials_commission', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_commission' ? 'selected' : '' }}>Commission</option>
+                        <option value="{{ path('financials_deposits', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_deposits' ? 'selected' : '' }}>Deposits</option>
+                        <option value="{{ path('financials_reversals', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_reversals' ? 'selected' : '' }}>Reversals</option>
+                        <option value="{{ path('financials_withdrawals', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_withdrawals' ? 'selected' : '' }}>Withdrawals</option>
+                        <option value="{{ path('financials_transfers', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_transfers' ? 'selected' : '' }}>Transfers</option>
+                        <option value="{{ path('financials_summary', {'id': merchant.id}) }}" {{ app.request.attributes.get('_route') == 'financials_summary' ? 'selected' : '' }}>Summary</option>
                     </select>
                 </div>
 

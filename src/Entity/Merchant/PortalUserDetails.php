@@ -5,10 +5,12 @@ use App\Entity\Merchant;
 use App\Repository\Merchant\PortalUserRepository;
 use App\Repository\MerchantRepository;
 use Doctrine\ORM\Mapping as ORM;
-use AllowDynamicProperties;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 #[AllowDynamicProperties] #[ORM\Entity(repositoryClass: PortalUserRepository::class)]
-class PortalUserDetails
+class PortalUserDetails implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,6 +35,7 @@ class PortalUserDetails
 
     #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $dateCreated;
+
 
     public function __construct()
     {
@@ -60,9 +63,10 @@ class PortalUserDetails
     /**
      * @param mixed $id
      */
-    public function setId($id): void
+    public function setId($id): self
     {
         $this->id = $id;
+        return $this;
 
     }
 
@@ -77,9 +81,10 @@ class PortalUserDetails
     /**
      * @param mixed $name
      */
-    public function setName($name): void
+    public function setName($name): felf
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
@@ -93,9 +98,10 @@ class PortalUserDetails
     /**
      * @param mixed $email
      */
-    public function setEmail($email): void
+    public function setEmail($email): self
     {
         $this->email = $email;
+        return $this;
     }
 
     public function getRoles(): array
@@ -103,25 +109,24 @@ class PortalUserDetails
         return $this->roles;
     }
 
-    public function setRoles(array $roles): void
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+        return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getEnabled()
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
-    /**
-     * @param mixed $enabled
-     */
-    public function setEnabled($enabled): void
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+        return $this;
     }
 
     /**
@@ -131,13 +136,41 @@ class PortalUserDetails
     {
         return $this->dateCreated;
     }
-
-    /**
-     * @param mixed $dateCreated
-     */
-    public function setDateCreated($dateCreated): void
+    public function setDateCreated(\DateTimeInterface $dateCreated): self
     {
         $this->dateCreated = $dateCreated;
+        return $this;
     }
+
+
+
+
+
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null; // Not needed if using modern hashing
+    }
+
+    public function getUsername(): string
+    {
+        return $this->email;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+    }
+
 
 }

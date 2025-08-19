@@ -215,9 +215,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
+//        $roles = $this->roles;
+//        // guarantee every user at least has ROLE_USER
+//        $roles[] = 'USER';
+//
+//        return array_unique($roles);
+
         $roles = $this->roles;
+        // Ensure all roles start with ROLE_ and uppercase
+        $roles = array_map(function($role) {
+            return str_starts_with($role, 'ROLE_') ? $role : 'ROLE_' . strtoupper($role);
+        }, $roles);
+
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'USER';
+        if (!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
 
         return array_unique($roles);
     }
@@ -250,7 +263,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEnabled(): bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
@@ -296,6 +309,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->name;
     }
+
 }
 
 //// src/Entity/User.php

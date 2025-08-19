@@ -30,10 +30,10 @@ class DepositsRepository extends ServiceEntityRepository
 //            ->getQuery()
 //            ->getResult();
 //    }
-    public function getTotalForMerchant(Merchant $merchant, \DateTimeInterface $start, \DateTimeInterface $end): string
+    public function getTotalForMerchant(Merchant $merchant, \DateTimeInterface $start, \DateTimeInterface $end): float
     {
         $result = $this->createQueryBuilder('d')
-            ->select('SUM(d.amount)')
+            ->select('SUM(d.amount) as total')
             ->where('d.merchant = :merchant')
             ->andWhere('d.createdAt BETWEEN :start AND :end')
             ->setParameter('merchant', $merchant)
@@ -42,7 +42,7 @@ class DepositsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?: '0.00';
+        return (float) ($result ?? 0);
     }
     public function findByMerchant(int $merchantId): array
     {

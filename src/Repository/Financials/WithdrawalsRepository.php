@@ -2,6 +2,7 @@
 
 namespace App\Repository\Financials;
 
+use App\Entity\Financials\Withdrawal;
 use App\Entity\Merchant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -10,7 +11,7 @@ class WithdrawalsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, 'App\Entity\Financials\Withdrawal'); // Update with your actual entity class
+        parent::__construct($registry, Withdrawal::class); // Update with your actual entity class
     }
 
     public function getTotalForMerchant(
@@ -28,7 +29,7 @@ class WithdrawalsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ? (string) $result : '0.00';
+        return $result ? (string) $result : '0';
     }
 
 }

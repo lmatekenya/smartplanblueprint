@@ -31,6 +31,11 @@ portal_users:
     controller: App\Controller\PortalUser\PortalUserController::portalUsers
     methods: GET
 
+portal_users_status:
+    path: /merchant/edit_user/{id}/{userId}
+    controller: App\Controller\PortalUser\PortalUserController::editUser
+    methods: [GET, POST]
+
 add_user:
     path: /merchant/portal_users/{id}
     controller: App\Controller\UserController:addUser
@@ -104,19 +109,19 @@ summary_financials:
 #    methods: GET
 
 app_limits_and_docs:
-    path: /merchant/limits-and-docs/{id}
+    path: /merchant/limits/{id}
     controller: App\Controller\LimitsAndDocs\CreditLimitController::creditLimit
     methods: GET
 
 app_limits_and_docs_edit:
-    path: /limits-and-docs/{id}/edit
+    path: /merchant/limits/{id}/edit
     controller: App\Controller\LimitsAndDocs\CreditLimitController::edit
     methods: [GET, POST]
 
 app_limits_and_docs_remove:
-    path: /merchant/limits-and-docs/{id}/remove
+    path: /merchant/limits/{id}/remove
     controller: App\Controller\LimitsAndDocs\CreditLimitController::remove
-    methods: [GET, POST]
+    methods: [DELETE, POST]
 
 app_limits_and_docs_providers:
     path: /merchant/providers/{id}
@@ -124,14 +129,14 @@ app_limits_and_docs_providers:
     methods: GET
 
 app_limits_and_docs_providers_edit:
-    path: /merchant/providers/{id}/edit
+    path: /merchant/providers/{id}/edit/{providerId}
     controller: App\Controller\LimitsAndDocs\ProviderController::edit_provider
     methods: [GET, POST]
 
-app_limits_and_docs_providers_remove:
-    path: /merchant/providers/{id}/delete/{providerId}
-    controller: App\Controller\LimitsAndDocs\ProviderController::delete_provider
-    methods: [GET, POST]
+#app_limits_and_docs_providers_remove:
+#    path: /merchant/providers/{id}/delete/{providerId}
+#    controller: App\Controller\LimitsAndDocs\ProviderController::delete_provider
+#    methods: [GET, POST]
 
 merchant_commissions:
     path: /merchant/commissions/{id}
@@ -186,6 +191,22 @@ report_group_itemised:
 report_group_sale_by_date:
     path: /merchant/group/{id}/group_sales_by_date
     controller: App\Controller\Reports\Group\GroupSalesByDateController::index
+    methods: GET
+
+# Document Upload Routes
+upload_merchant_document:
+    path: /merchant/{id}/upload-document
+    controller: App\Controller\LimitsAndDocs\DocumentUploadController::uploadDocument
+    methods: POST
+
+merchant_document_counts:
+    path: /merchant/{id}/document-counts
+    controller: App\Controller\LimitsAndDocs\DocumentUploadController::getDocumentCounts
+    methods: GET
+
+view_merchant_document:
+    path: /merchant/{id}/documents/{type}/{filename}
+    controller: App\Controller\LimitsAndDocs\DocumentUploadController::viewDocument
     methods: GET
 
 #merchant_details:

@@ -1,0 +1,323 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Provider - {{ provider.name|default('Provider') }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal Container */
+        .modal-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Header */
+        .modal-header {
+            background: linear-gradient(135deg, #ffffff, #fcfaff);
+            color: #333;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Modal Body - Table-like Layout */
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .form-table tr:not(:last-child) {
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-table th {
+            text-align: left;
+            padding: 15px 10px;
+            width: 25%;
+            vertical-align: top;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-table td {
+            padding: 15px 10px;
+        }
+
+        /* Form Controls */
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #6e8efb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .status-enabled {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-disabled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Type Badge */
+        .type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .type-payment {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .type-banking {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        .type-utility {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        /* Readonly Info */
+        .readonly-info {
+            padding: 10px 0;
+            font-size: 16px;
+        }
+
+        /* Checkbox Toggle */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Button Styles */
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3e8e41;
+        }
+
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #ddd;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% if provider is not defined or provider is null %}
+    <div class="alert alert-danger">Provider not found</div>
+    {% else %}
+    <div class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Provider</h3>
+                <button class="modal-close" onclick="window.history.back()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                {{ form_start(form) }}
+                <table class="form-table">
+                    <!-- Provider Name -->
+                    <tr>
+                        <th>{{ form_label(form.name) }}</th>
+                        <td>{{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}</td>
+                    </tr>
+
+                    <!-- Provider Type -->
+                    <tr>
+                        <th>{{ form_label(form.type) }}</th>
+                        <td>
+                            {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                            <div style="margin-top: 8px;">
+                                <span class="type-badge type-{{ provider.type|lower }}">
+                                    {{ provider.type|capitalize }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Is Enabled -->
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <label class="toggle-switch">
+                                    {{ form_widget(form.isEnabled) }}
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="status-badge status-{{ provider.isEnabled ? 'enabled' : 'disabled' }}">
+                                    {{ provider.isEnabled ? 'Enabled' : 'Disabled' }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Date Created (Readonly) -->
+                    <tr>
+                        <th>Date Created</th>
+                        <td class="readonly-info">
+                            {{ provider.dateCreated|date('Y-m-d H:i') }}
+                        </td>
+                    </tr>
+
+                    <!-- Updated By (Readonly) -->
+                    <tr>
+                        <th>Updated By</th>
+                        <td class="readonly-info">
+                            {{ provider.updatedBy ?? 'N/A' }}
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn btn-secondary" onclick="window.history.back()">Cancel</button>
+                    <button type="submit" class="modal-btn btn-primary">Save Changes</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

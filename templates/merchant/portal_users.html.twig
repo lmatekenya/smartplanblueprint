@@ -1,3 +1,491 @@
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}Portal Users - PrepaidPlus{% endblock %}#}
+
+{#{% block header_title %}Portal Users{% endblock %}#}
+
+{#{% block breadcrumb %}#}
+{#    <div class="breadcrumb-item">#}
+{#    <a href="{{ path('app_dashboard') }}" style="color: #7f8c8d;" class="breadcrumb-link">Dashboard</a>#}
+{#    <span class="breadcrumb-separator"> / </span>#}
+{#    <a href="{{ path('portal_users', {'id': merchant.id}) }}" style="color: #7f8c8d;" class="breadcrumb-link">Merchant-Users</a>#}
+{#    </div>{% endblock %}#}
+
+{#{% block stylesheets %}#}
+{#    {{ parent() }}#}
+{#    <style>#}
+{#        .merchant-container {#}
+{#            margin: 0 auto;#}
+{#            padding: 20px;#}
+{#        }#}
+
+{#        .merchant-header {#}
+{#            background-color: white;#}
+{#            color: white;#}
+{#            padding: 15px;#}
+{#            border-radius: 8px 8px 0 0;#}
+{#            margin-bottom: 20px;#}
+{#            display: flex;#}
+{#            justify-content: space-between;#}
+{#            align-items: center;#}
+{#        }#}
+
+{#        .info-card {#}
+{#            background-color: white;#}
+{#            border-radius: 8px;#}
+{#            box-shadow: 0 2px 4px rgba(0,0,0,0.1);#}
+{#            padding: 20px;#}
+{#            margin-bottom: 20px;#}
+{#        }#}
+
+{#        .info-table {#}
+{#            width: 100%;#}
+{#            border-collapse: collapse;#}
+{#            margin-bottom: 20px;#}
+{#        }#}
+
+{#        .info-table th {#}
+{#            text-align: left;#}
+{#            padding: 12px;#}
+{#            background-color: var(--light);#}
+{#            border-bottom: 2px solid #bdc3c7;#}
+{#        }#}
+
+{#        .info-table td {#}
+{#            padding: 12px;#}
+{#            border-bottom: 1px solid var(--light);#}
+{#        }#}
+
+{#        .section-title {#}
+{#            color: var(--primary);#}
+{#            margin-top: 0;#}
+{#            margin-bottom: 15px;#}
+{#        }#}
+
+{#        .keyware-nav {#}
+{#            display: flex;#}
+{#            gap: 15px;#}
+{#            margin-bottom: 20px;#}
+{#        }#}
+
+{#        .keyware-btn {#}
+{#            padding: 10px 20px;#}
+{#            background-color: var(--light);#}
+{#            color: black;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            cursor: pointer;#}
+{#            text-decoration: none;#}
+{#            font-weight: bold;#}
+{#        }#}
+
+{#        .keyware-btn.active {#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#            text-decoration: none;#}
+{#            font-weight: bold;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            cursor: pointer;#}
+{#        }#}
+
+{#        .keyware-btn:hover {#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#            text-decoration: none;#}
+{#            font-weight: bold;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            cursor: pointer;#}
+
+{#        }#}
+
+{#        /* CRUD Button Styles */#}
+{#        .action-btn {#}
+{#            padding: 6px 12px;#}
+{#            border-radius: 4px;#}
+{#            font-size: 14px;#}
+{#            margin-right: 5px;#}
+{#            text-decoration: none;#}
+{#            display: inline-block;#}
+{#        }#}
+
+{#        .btn-view {#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#        }#}
+
+{#        .btn-edit {#}
+{#            background-color: var(--warning);#}
+{#            color: white;#}
+{#        }#}
+
+{#        .btn-delete {#}
+{#            background-color: var(--danger);#}
+{#            color: white;#}
+{#        }#}
+
+{#        .btn-add {#}
+{#            background-color: var(--light);#}
+{#            color: #000000;#}
+{#            padding: 10px 20px;#}
+{#            margin-bottom: 15px;#}
+{#            display: inline-block;#}
+{#            border-radius: 4px;#}
+{#            border: none;#}
+{#            font-weight: bold;#}
+{#            cursor: pointer;#}
+{#        }#}
+
+{#        .btn-add:hover{#}
+{#            background-color: var(--secondary);#}
+{#        }#}
+
+{#        .action-btns {#}
+{#            white-space: nowrap;#}
+{#        }#}
+
+
+{#        /* Modal Styles */#}
+{#        .modal {#}
+{#            display: none;#}
+{#            position: fixed;#}
+{#            z-index: 1000;#}
+{#            left: 0;#}
+{#            top: 0;#}
+{#            width: 100%;#}
+{#            height: 100%;#}
+{#            background-color: rgba(0,0,0,0.5);#}
+{#        }#}
+
+{#        .modal-content {#}
+{#            background-color: white;#}
+{#            margin: 10% auto;#}
+{#            padding: 25px;#}
+{#            border-radius: 8px;#}
+{#            width: 50%;#}
+{#            max-width: 600px;#}
+{#            box-shadow: 0 4px 20px rgba(0,0,0,0.2);#}
+{#            animation: modalopen 0.3s;#}
+{#        }#}
+
+{#        @keyframes modalopen {#}
+{#            from {opacity: 0; transform: translateY(-50px);}#}
+{#            to {opacity: 1; transform: translateY(0);}#}
+{#        }#}
+
+{#        .modal-header {#}
+{#            display: flex;#}
+{#            justify-content: space-between;#}
+{#            align-items: center;#}
+{#            margin-bottom: 20px;#}
+{#            padding-bottom: 10px;#}
+{#            border-bottom: 1px solid #eee;#}
+{#        }#}
+
+{#        .modal-header h2 {#}
+{#            margin: 0;#}
+{#            color: var(--primary);#}
+{#        }#}
+
+{#        .close-modal {#}
+{#            color: #aaa;#}
+{#            font-size: 24px;#}
+{#            font-weight: bold;#}
+{#            cursor: pointer;#}
+{#        }#}
+
+{#        .close-modal:hover {#}
+{#            color: #555;#}
+{#        }#}
+
+{#        .modal-body {#}
+{#            margin-bottom: 20px;#}
+{#        }#}
+
+{#        .modal-footer {#}
+{#            display: flex;#}
+{#            justify-content: flex-end;#}
+{#            gap: 10px;#}
+{#        }#}
+
+{#        /* Form Styles */#}
+{#        .form-group {#}
+{#            margin-bottom: 15px;#}
+{#        }#}
+
+{#         .form-group input {#}
+{#            width: 100%;#}
+{#            padding: 10px;#}
+{#            border: 1px solid #ddd;#}
+{#            border-radius: 4px;#}
+{#            font-size: 14px;#}
+{#            margin-right: 10px;#}
+{#        }#}
+
+{#        .form-group label {#}
+{#            display: block;#}
+{#            margin-bottom: 5px;#}
+{#            font-weight: 500;#}
+{#        }#}
+
+{#        .form-control {#}
+{#            width: 100%;#}
+{#            padding: 10px;#}
+{#            border: 1px solid #ddd;#}
+{#            border-radius: 4px;#}
+{#            font-size: 14px;#}
+{#        }#}
+
+{#        .form-control:focus {#}
+{#            border-color: var(--primary);#}
+{#            outline: none;#}
+{#            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);#}
+{#        }#}
+
+{#        #cancelUser {#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            padding: 10px 20px;#}
+{#            cursor: pointer;#}
+{#            font-weight: bold;#}
+{#        }#}
+
+{#        #addUser{#}
+{#            background-color: var(--secondary);#}
+{#            color: white;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            padding: 10px 20px;#}
+{#            cursor: pointer;#}
+{#            font-weight: bold;#}
+{#        }#}
+
+{#        #addUser:hover{#}
+{#            background-color: var(--dark);#}
+{#        }#}
+
+{#        #cancelUser:hover{#}
+{#            background-color: var(--dark);#}
+{#        }#}
+
+{#        #addUser:focus{#}
+{#            background-color: var(--dark);#}
+{#            color: white;#}
+{#            border: none;#}
+{#            border-radius: 4px;#}
+{#            padding: 10px 20px;#}
+{#            cursor: pointer;#}
+{#            font-weight: bold;#}
+{#        }#}
+
+{#        .merchant-title {#}
+{#            margin: 0;#}
+{#            color: var(--primary);#}
+{#            font-size: 1.5rem;#}
+{#            font-weight: 600;#}
+{#        }#}
+
+{#        .merchant-id {#}
+{#            color: var(--gray);#}
+{#            font-size: 0.9rem;#}
+{#            font-weight: 500;#}
+{#        }#}
+
+{#        .merchant-name {#}
+{#            color: var(--gray);#}
+{#            font-size: 0.9rem;#}
+{#            font-weight: 500;#}
+{#            display: flex;#}
+{#        }#}
+
+{#    </style>#}
+{#{% endblock %}#}
+
+{#{% block body %}#}
+{#    <div class="merchant-container">#}
+{#        <!-- Header with Add Button -->#}
+{#        <div class="merchant-header">#}
+{#            <div class="header-content">#}
+{#                <h2 class="merchant-title">MERCHANT USERS</h2>#}
+{#                <div class="merchant-name">Merchant Name: <strong>{{ merchant.name }}</strong></div>#}
+{#                <div class="merchant-id">Merchant ID: {{ merchant.code }}</div>#}
+{#            </div>#}
+{#            <button id="openUserModal" class="btn-add">#}
+{#                <i class="fas fa-plus"></i> Add New User#}
+{#            </button>#}
+{#        </div>#}
+
+{#        <!-- Keyware Navigation -->#}
+{#        <div class="info-card">#}
+{#            <div class="keyware-nav">#}
+{#                <a href="{{ path('merchant_details', {'id': merchant.id}) }}" class="keyware-btn active">DETAILS</a>#}
+{#                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="keyware-btn">PORTAL USERS</a>#}
+{#                <a href="{{ path('outlets', {'id': merchant.id}) }}" class="keyware-btn">OUTLETS</a>#}
+{#            </div>#}
+
+{#            <!-- Users Table with Action Buttons -->#}
+{#            <table class="info-table">#}
+{#                <thead>#}
+{#                <tr>#}
+{#                    <th>Name</th>#}
+{#                    <th>Email (Username)</th>#}
+{#                    <th>Role</th>#}
+{#                    <th>Status</th>#}
+{#                    <th>Date Created</th>#}
+{#                    <th>Actions</th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                {% for user in portalUsers %}#}
+{#                    <tr>#}
+{#                        <td>{{ user.name }}</td>#}
+{#                        <td>{{ user.email }}</td>#}
+{#                        <td>{{ user.roles|join(', ')|replace({'ROLE_': ''}) }}</td>#}
+{#                        <td>#}
+{#                            <span class="{{ user.enabled ? 'status-active' : 'status-disabled' }}">#}
+{#                                {{ user.enabled ? 'Active' : 'Disabled' }}#}
+{#                            </span>#}
+{#                        </td>#}
+{#                        <td>{{ user.dateCreated|date('Y-m-d H:i') }}</td>#}
+{#                        <td class="action-btns">#}
+{#                            <a href="{{ path('view_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-view">#}
+{#                                <i class="fas fa-eye"></i>#}
+{#                            </a>#}
+{#                            <a href="{{ path('edit_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-edit">#}
+{#                                <i class="fas fa-edit"></i>#}
+{#                            </a>#}
+{#                            <form method="post" action="{{ path('toggle_user_status', {'id': merchant.id, 'userId': user.id}) }}" style="display: inline-block;">#}
+{#                                <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ user.id) }}">#}
+{#                                <label class="status-toggle">#}
+{#                                    <input type="checkbox" name="enabled" {{ user.enabled ? 'checked' : '' }} onchange="this.form.submit()">#}
+{#                                    <span class="slider"></span>#}
+{#                                </label>#}
+{#                            </form>#}
+{#                            <form method="post" action="{{ path('user_delete', {'id': merchant.id, 'userId': user.id}) }}" style="display: inline-block;">#}
+{#                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">#}
+{#                                <button type="submit" class="action-btn btn-delete"#}
+{#                                        onclick="return confirm('Are you sure you want to delete this user?')">#}
+{#                                    <i class="fas fa-trash"></i>#}
+{#                                </button>#}
+{#                            </form>#}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% else %}#}
+{#                    <tr>#}
+{#                        <td colspan="6">No portal users found</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{#        </div>#}
+
+{#        <!-- Add User Modal -->#}
+{#        <div id="userModal" class="modal">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h2>Add New User</h2>#}
+{#                    <span class="close-modal">&times;</span>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    <form id="userForm" action="{{ path('user_add', {'id': merchant.id}) }}" method="POST">#}
+{#                        <input type="hidden" name="_token" value="{{ csrf_token('add_user') }}">#}
+{#                        <div class="form-group">#}
+{#                            <label for="firstName">First Name(s)</label>#}
+{#                            <input type="text" id="firstName" name="firstName" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="lastName">Last Name</label>#}
+{#                            <input type="text" id="lastName" name="lastName" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userEmail">Email (Username)</label>#}
+{#                            <input type="email" id="userEmail" name="email" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userRole">Role</label>#}
+{#                            <select id="userRole" name="role" class="form-control" required>#}
+{#                                <option value="">Select Role</option>#}
+{#                                <option value="ROLE_ADMIN">Administrator</option>#}
+{#                                <option value="ROLE_REPORT_ADMIN">Report Admin</option>#}
+{#                                <option value="ROLE_GROUP_ADMIN">Group Administrator</option>#}
+{#                                <option value="ROLE_USER">Standard User</option>#}
+{#                            </select>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userPassword">Password</label>#}
+{#                            <input type="password" id="userPassword" name="password" class="form-control" required minlength="8">#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="confirmPassword">Confirm Password</label>#}
+{#                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label>#}
+{#                                <input type="checkbox" name="isActive" checked> Active User#}
+{#                            </label>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </div>#}
+{#                <div class="modal-footer">#}
+{#                    <button type="button" class="action-btn btn-edit" id="cancelUser">Cancel</button>#}
+{#                    <button type="submit" form="userForm" id="addUser">Create User</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            const modal = document.getElementById('userModal');#}
+{#            const openBtn = document.getElementById('openUserModal');#}
+{#            const closeBtn = document.querySelector('.close-modal');#}
+{#            const cancelBtn = document.getElementById('cancelUser');#}
+
+{#            // Open modal#}
+{#            openBtn.addEventListener('click', function() {#}
+{#                modal.style.display = 'block';#}
+{#            });#}
+
+{#            // Close modal#}
+{#            function closeModal() {#}
+{#                modal.style.display = 'none';#}
+{#            }#}
+
+{#            closeBtn.addEventListener('click', closeModal);#}
+{#            cancelBtn.addEventListener('click', closeModal);#}
+
+{#            window.addEventListener('click', function(event) {#}
+{#                if (event.target === modal) {#}
+{#                    closeModal();#}
+{#                }#}
+{#            });#}
+
+{#            userForm.addEventListener('submit', function(e) {#}
+{#                const password = document.getElementById('userPassword').value;#}
+{#                const confirmPassword = document.getElementById('confirmPassword').value;#}
+
+{#                if (password !== confirmPassword) {#}
+{#                    e.preventDefault();#}
+{#                    alert('Passwords do not match!');#}
+{#                    return false;#}
+{#                }#}
+
+{#                if (password.length < 8) {#}
+{#                    e.preventDefault();#}
+{#                    alert('Password must be at least 8 characters long!');#}
+{#                    return false;#}
+{#                }#}
+
+{#                return true;#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
+
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Portal Users - PrepaidPlus{% endblock %}
@@ -145,7 +633,6 @@
             white-space: nowrap;
         }
 
-
         /* Modal Styles */
         .modal {
             display: none;
@@ -214,7 +701,7 @@
             margin-bottom: 15px;
         }
 
-         .form-group input {
+        .form-group input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -300,6 +787,17 @@
             font-weight: 500;
             display: flex;
         }
+
+        .status-disabled {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .status-active {
+            color: var(--success);
+            font-weight: bold;
+        }
+
     </style>
 {% endblock %}
 
@@ -312,7 +810,7 @@
                 <div class="merchant-name">Merchant Name: <strong>{{ merchant.name }}</strong></div>
                 <div class="merchant-id">Merchant ID: {{ merchant.code }}</div>
             </div>
-            <button id="openUserModal"  class="btn-add">
+            <button id="openUserModal" class="btn-add">
                 <i class="fas fa-plus"></i> Add New User
             </button>
         </div>
@@ -332,19 +830,22 @@
                     <th>Name</th>
                     <th>Email (Username)</th>
                     <th>Role</th>
-                    <th>Enabled</th>
+                    <th>Status</th>
                     <th>Date Created</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-
                 {% for user in portalUsers %}
                     <tr>
                         <td>{{ user.name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.roles|join(', ')|replace({'ROLE_': ''}) }}</td>
-                        <td>{{ user.enabled ? 'Active' : 'Disabled' }}</td>
+                        <td>
+                            <span class="{{ user.enabled ? 'status-active' : 'status-disabled' }}">
+                                {{ user.enabled ? 'Active' : 'Disabled' }}
+                            </span>
+                        </td>
                         <td>{{ user.dateCreated|date('Y-m-d H:i') }}</td>
                         <td class="action-btns">
                             <a href="{{ path('view_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-view">
@@ -370,50 +871,6 @@
                 </tbody>
             </table>
         </div>
-
-{#        <!-- Add User Modal -->#}
-{#        <div id="userModal" class="modal">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-header">#}
-{#                    <h2>Add New User</h2>#}
-{#                    <span class="close-modal">&times;</span>#}
-{#                </div>#}
-{#                <div class="modal-body">#}
-{#                    <form id="userForm" action="{{ path('user_add') }}" method="POST">#}
-{#                        <div class="form-group">#}
-{#                            <label for="userName">First Name(s)</label>#}
-{#                            <input type="text" id="userName" name="name" class="form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            <label for="lastName">Last Name</label>#}
-{#                            <input type="text" id="lastName" name="name" class="form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            <label for="userEmail">Email (Username)</label>#}
-{#                            <input type="email" id="userEmail" name="email" class="form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            <label for="userRole">Role</label>#}
-{#                            <select id="userRole" name="role" class="form-control" required>#}
-{#                                <option value="">Select Role</option>#}
-{#                                <option value="Administrator">Administrator</option>#}
-{#                                <option value="Report_Admin">Report Admin</option>#}
-{#                                <option value="Group Administrator">Group Administrator</option>#}
-{#                                <option value="User">Standard User</option>#}
-{#                            </select>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            <label for="userPassword">Password</label>#}
-{#                            <input type="password" id="userPassword" name="password" class="form-control" required>#}
-{#                        </div>#}
-{#                    </form>#}
-{#                </div>#}
-{#                <div class="modal-footer">#}
-{#                    <button type="button" class="action-btn btn-edit" id="cancelUser">Cancel</button>#}
-{#                    <button type="submit" form="userForm" id="addUser">Create User</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
 
         <!-- Add User Modal -->
         <div id="userModal" class="modal">
@@ -471,7 +928,6 @@
     </div>
 
     <script>
-        // Modal functionality
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('userModal');
             const openBtn = document.getElementById('openUserModal');
@@ -491,14 +947,12 @@
             closeBtn.addEventListener('click', closeModal);
             cancelBtn.addEventListener('click', closeModal);
 
-            // Close when clicking outside modal
             window.addEventListener('click', function(event) {
                 if (event.target === modal) {
                     closeModal();
                 }
             });
 
-            // Form validation
             userForm.addEventListener('submit', function(e) {
                 const password = document.getElementById('userPassword').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
@@ -517,14 +971,193 @@
 
                 return true;
             });
-
-            // Form submission handling
-            document.getElementById('userForm').addEventListener('submit', function(e) {
-                // You could add validation here
-                // e.preventDefault(); // Uncomment to handle with AJAX instead
-            });
         });
     </script>
-
-    </div>
 {% endblock %}
+
+
+
+
+{#{% block body %}#}
+{#    <div class="merchant-container">#}
+{#        <!-- Header with Add Button -->#}
+{#        <div class="merchant-header">#}
+{#            <div class="header-content">#}
+{#                <h2 class="merchant-title">MERCHANT USERS</h2>#}
+{#                <div class="merchant-name">Merchant Name: <strong>{{ merchant.name }}</strong></div>#}
+{#                <div class="merchant-id">Merchant ID: {{ merchant.code }}</div>#}
+{#            </div>#}
+{#            <button id="openUserModal"  class="btn-add">#}
+{#                <i class="fas fa-plus"></i> Add New User#}
+{#            </button>#}
+{#        </div>#}
+
+{#        <!-- Keyware Navigation -->#}
+{#        <div class="info-card">#}
+{#            <div class="keyware-nav">#}
+{#                <a href="{{ path('merchant_details', {'id': merchant.id}) }}" class="keyware-btn active">DETAILS</a>#}
+{#                <a href="{{ path('portal_users', {'id': merchant.id}) }}" class="keyware-btn">PORTAL USERS</a>#}
+{#                <a href="{{ path('outlets', {'id': merchant.id}) }}" class="keyware-btn">OUTLETS</a>#}
+{#            </div>#}
+
+{#            <!-- Users Table with Action Buttons -->#}
+{#            <table class="info-table">#}
+{#                <thead>#}
+{#                <tr>#}
+{#                    <th>Name</th>#}
+{#                    <th>Email (Username)</th>#}
+{#                    <th>Role</th>#}
+{#                    <th>Enabled</th>#}
+{#                    <th>Date Created</th>#}
+{#                    <th>Actions</th>#}
+{#                </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+
+{#                {% for user in portalUsers %}#}
+{#                    <tr>#}
+{#                        <td>{{ user.name }}</td>#}
+{#                        <td>{{ user.email }}</td>#}
+{#                        <td>{{ user.roles|join(', ')|replace({'ROLE_': ''}) }}</td>#}
+{#                        <td>{{ user.enabled ? 'Active' : 'Disabled' }}</td>#}
+{#                        <td>{{ user.dateCreated|date('Y-m-d H:i') }}</td>#}
+{#                        <td class="action-btns">#}
+{#                            <a href="{{ path('view_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-view">#}
+{#                                <i class="fas fa-eye"></i>#}
+{#                            </a>#}
+{#                            <a href="{{ path('edit_user', {'id': merchant.id, 'userId': user.id}) }}" class="action-btn btn-edit">#}
+{#                                <i class="fas fa-edit"></i>#}
+{#                            </a>#}
+{#                            <form method="post" action="{{ path('user_delete', {'id': merchant.id, 'userId': user.id}) }}" style="display: inline-block;">#}
+{#                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">#}
+{#                                <button type="submit" class="action-btn btn-delete"#}
+{#                                        onclick="return confirm('Are you sure you want to delete this user?')">#}
+{#                                    <i class="fas fa-trash"></i>#}
+{#                                </button>#}
+{#                            </form>#}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% else %}#}
+{#                    <tr>#}
+{#                        <td colspan="6">No portal users found</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{#        </div>#}
+
+{#        <!-- Add User Modal -->#}
+{#        <div id="userModal" class="modal">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h2>Add New User</h2>#}
+{#                    <span class="close-modal">&times;</span>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    <form id="userForm" action="{{ path('user_add', {'id': merchant.id}) }}" method="POST">#}
+{#                        <input type="hidden" name="_token" value="{{ csrf_token('add_user') }}">#}
+{#                        <div class="form-group">#}
+{#                            <label for="firstName">First Name(s)</label>#}
+{#                            <input type="text" id="firstName" name="firstName" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="lastName">Last Name</label>#}
+{#                            <input type="text" id="lastName" name="lastName" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userEmail">Email (Username)</label>#}
+{#                            <input type="email" id="userEmail" name="email" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userRole">Role</label>#}
+{#                            <select id="userRole" name="role" class="form-control" required>#}
+{#                                <option value="">Select Role</option>#}
+{#                                <option value="ROLE_ADMIN">Administrator</option>#}
+{#                                <option value="ROLE_REPORT_ADMIN">Report Admin</option>#}
+{#                                <option value="ROLE_GROUP_ADMIN">Group Administrator</option>#}
+{#                                <option value="ROLE_USER">Standard User</option>#}
+{#                            </select>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="userPassword">Password</label>#}
+{#                            <input type="password" id="userPassword" name="password" class="form-control" required minlength="8">#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="confirmPassword">Confirm Password</label>#}
+{#                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label>#}
+{#                                <input type="checkbox" name="isActive" checked> Active User#}
+{#                            </label>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </div>#}
+{#                <div class="modal-footer">#}
+{#                    <button type="button" class="action-btn btn-edit" id="cancelUser">Cancel</button>#}
+{#                    <button type="submit" form="userForm" id="addUser">Create User</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{#    <script>#}
+{#        // Modal functionality#}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            const modal = document.getElementById('userModal');#}
+{#            const openBtn = document.getElementById('openUserModal');#}
+{#            const closeBtn = document.querySelector('.close-modal');#}
+{#            const cancelBtn = document.getElementById('cancelUser');#}
+
+{#            // Open modal#}
+{#            openBtn.addEventListener('click', function() {#}
+{#                modal.style.display = 'block';#}
+{#            });#}
+
+{#            // Close modal#}
+{#            function closeModal() {#}
+{#                modal.style.display = 'none';#}
+{#            }#}
+
+{#            closeBtn.addEventListener('click', closeModal);#}
+{#            cancelBtn.addEventListener('click', closeModal);#}
+
+{#            // Close when clicking outside modal#}
+{#            window.addEventListener('click', function(event) {#}
+{#                if (event.target === modal) {#}
+{#                    closeModal();#}
+{#                }#}
+{#            });#}
+
+{#            // Form validation#}
+{#            userForm.addEventListener('submit', function(e) {#}
+{#                const password = document.getElementById('userPassword').value;#}
+{#                const confirmPassword = document.getElementById('confirmPassword').value;#}
+
+{#                if (password !== confirmPassword) {#}
+{#                    e.preventDefault();#}
+{#                    alert('Passwords do not match!');#}
+{#                    return false;#}
+{#                }#}
+
+{#                if (password.length < 8) {#}
+{#                    e.preventDefault();#}
+{#                    alert('Password must be at least 8 characters long!');#}
+{#                    return false;#}
+{#                }#}
+
+{#                return true;#}
+{#            });#}
+
+{#            // Form submission handling#}
+{#            document.getElementById('userForm').addEventListener('submit', function(e) {#}
+{#                // You could add validation here#}
+{#                // e.preventDefault(); // Uncomment to handle with AJAX instead#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+
+{#{% endblock %}#}
+
+
+

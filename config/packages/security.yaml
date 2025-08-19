@@ -66,45 +66,145 @@
 #
 
 
+#security:
+#    password_hashers:
+#        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'plaintext'
+#
+#    providers:
+#        in_memory:
+#            memory:
+#                users:
+#                    "admin@mail.com":
+#                        password: 'admin1234'
+#                        roles: ['ROLE_ADMIN', 'ROLE_USER']
+#                    "user@mail.com":
+#                        password: 'user12345'
+#                        roles: ['ROLE_USER']
+#
+#    firewalls:
+
+
+#        dev:
+#            pattern: ^/(_(profiler|wdt)|css|images|js)/
+#            security: false
+#
+#        main:
+#            provider: in_memory
+#            form_login:
+#                login_path: app_login
+#                check_path: app_login
+#                username_parameter: email
+#                password_parameter: password
+#                enable_csrf: true
+
+
 security:
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'plaintext'
+        Symfony\Component\Security\Core\User\InMemoryUser:
+            algorithm: bcrypt
+        App\Entity\User:
+            algorithm: bcrypt
 
     providers:
+        chain_provider:
+            chain:
+                providers: [in_memory, portal_user_provider]
+
         in_memory:
             memory:
                 users:
-                    "admin@mail.com":
-                        password: 'admin1234'
-                        roles: ['ROLE_ADMIN']
-                    "user@mail.com":
-                        password: 'user12345'
-                        roles: ['ROLE_USER']
+                    admin@mail.com:
+                        # Hashed version of admin1234
+                        password: '$2y$13$V3kcSFildW.R69cnzm3m0eqmNbqpoPvNcWnCbRNwrGQrFYXUMfJcu'
+                        roles: ['ROLE_SUPER_ADMIN', 'ROLE_USER']
+
+        portal_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
 
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-
         main:
-            provider: in_memory
+            provider: chain_provider
             form_login:
-                login_path: app_login
+                username_parameter: 'email'
+                password_parameter: 'password'
                 check_path: app_login
-                username_parameter: email
-                password_parameter: password
+                login_path: app_login
+                default_target_path: app_dashboard
                 enable_csrf: true
             logout:
                 path: app_logout
+            user_checker: App\Service\UserChecker
+            # Add this if you're using remember me functionality
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week in seconds
+                path: /
+                remember_me_parameter: 'remember_me'
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/dashboard, roles: PUBLIC_ACCESS }
-        - { path: ^/merchant/, roles: PUBLIC_ACCESS }
-        - { path: ^/financials, roles: PUBLIC_ACCESS }
-        - { path: ^/commission, roles: PUBLIC_ACCESS }
-        - { path: ^/limits, roles: PUBLIC_ACCESS }
-        - { path: ^/reports, roles: PUBLIC_ACCESS}
-        - { path: ^/, roles: ROLE_USER }
-        - { path: ^/, roles: ROLE_ADMIN }
+        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/merchant/, roles: [ROLE_USER, ROLE_ADMIN, ROLE_SUPER_ADMIN] }
+        - { path: ^/financials, roles: ROLE_USER }
+        - { path: ^/commission, roles: ROLE_USER }
+        - { path: ^/limits, roles: ROLE_USER }
+        - { path: ^/reports, roles: ROLE_USER }
+        - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
+
+#security:
+#
+#    password_hashers:
+##            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'plaintext'
+#                # For in-memory users
+#                Symfony\Component\Security\Core\User\InMemoryUser: 'auto'
+#                # For your database users
+#                App\Entity\User: 'auto'
+#
+#    providers:
+#        # Chain provider that tries both in-memory and database providers
+#        chain_provider:
+#            chain:
+#                providers: [in_memory, portal_user_provider]
+#
+#        # In-memory provider for super users
+#        in_memory:
+#            memory:
+#                users:
+#                    "admin@mail.com":
+#                         password: 'admin1234'
+#                         roles: ['ROLE_ADMIN', 'ROLE_USER']
+#
+#        # Database provider for regular users
+#        portal_user_provider:
+#            entity:
+#                class: App\Entity\User
+#                property: email
+#
+#    firewalls:
+#        main:
+#            provider: chain_provider  # Use the chain provider
+#            form_login:
+#                username_parameter: 'email'  # Map email field to username
+#                password_parameter: 'password'
+##            form_login:
+##                check_path: app_login
+##                login_path: app_login
+#
+#
+#            # ... rest of your firewall config
+#            logout:
+#                path: app_logout
+#
+#    access_control:
+#        - { path: ^/login, roles: PUBLIC_ACCESS }
+#        - { path: ^/register, roles: PUBLIC_ACCESS }
+#        - { path: ^/dashboard, roles: ROLE_USER }
+#        - { path: ^/merchant/, roles: ROLE_USER }
+#        - { path: ^/financials, roles: ROLE_USER }
+#        - { path: ^/commission, roles: ROLE_USER }
+#        - { path: ^/limits, roles: ROLE_USER }
+#        - { path: ^/reports, roles: ROLE_USER }
+#        - { path: ^/admin, roles: ROLE_ADMIN }

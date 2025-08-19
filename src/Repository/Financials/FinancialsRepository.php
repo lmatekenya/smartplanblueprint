@@ -44,7 +44,7 @@ class FinancialsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?: '0.00';
+        return (float) ($result ?? 0);
     }
 
     public function findDepositsByMerchant(int $merchantId): float

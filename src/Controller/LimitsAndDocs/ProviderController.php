@@ -86,26 +86,48 @@ class ProviderController extends AbstractController
             return $this->redirectToRoute('providers', ['id' => $id]);
         }
 
-        return $this->render('limits_and_documents/provider_form.html.twig', [
+        return $this->render('limits_and_documents/provider/provider_edit.html.twig', [
             'form' => $form->createView(),
+            'provider' => $provider,
             'merchant' => $provider->getMerchant()
         ]);
     }
 
-    #[Route('/providers/{id}/delete/{providerId}', name: 'provider_delete')]
-    public function delete_provider(
-        int $id,
-        int $providerId,
-        ProviderRepository $providerRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $provider = $providerRepository->find($providerId);
-
-        if ($provider) {
-            $entityManager->remove($provider);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('providers', ['id' => $id]);
-    }
+//    #[Route('/providers/{id}/delete/{providerId}', name: 'provider_delete')]
+//    public function delete_provider(
+//        int $id,
+//        int $providerId,
+//        Request $request,
+//        ProviderRepository $providerRepository,
+//        EntityManagerInterface $entityManager
+//    ): Response {
+//        $provider = $providerRepository->find($providerId);
+//
+////        if ($provider) {
+////            $entityManager->remove($provider);
+////            $entityManager->flush();
+////        }
+////
+////        return $this->redirectToRoute('providers', ['id' => $id]);
+//
+//        if (!$provider) {
+//            $this->addFlash('error', 'Provider not found');
+//            return $this->redirectToRoute('providers', ['id' => $id]);
+//        }
+//
+//        if ($request->isMethod('POST')) {
+//            $entityManager->remove($provider);
+//            $entityManager->flush();
+//
+//            $this->addFlash('success', 'Provider deleted successfully');
+//            return $this->redirectToRoute('providers', ['id' => $id]);
+//        }
+//
+//        return $this->render('limits_and_documents/provider/provider_delete.html.twig', [
+//            'provider' => $provider,
+//            'merchant' => $provider->getMerchant(),
+//            'id' => $id,
+//            'providerId' => $providerId,
+//        ]);
+//    }
 }
