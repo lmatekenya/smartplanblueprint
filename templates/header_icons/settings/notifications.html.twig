@@ -1,0 +1,66 @@
+{# templates/header_icons/settings/notifications.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Notification Settings - PrepaidPlus{% endblock %}
+
+{% block header_title %}Notification Preferences{% endblock %}
+{% block breadcrumb %}Settings / Notifications{% endblock %}
+
+{% block body %}
+    <div class="dashboard-card">
+        <h2>Notification Preferences</h2>
+
+        <form>
+            <h3>Email Notifications</h3>
+
+            <div class="notification-setting">
+                <label class="checkbox-label">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    Transaction alerts
+                </label>
+                <p>Receive emails for important transactions</p>
+            </div>
+
+            <div class="notification-setting">
+                <label class="checkbox-label">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    Monthly reports
+                </label>
+                <p>Receive monthly performance reports</p>
+            </div>
+
+            <div class="notification-setting">
+                <label class="checkbox-label">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    Marketing communications
+                </label>
+                <p>Receive updates about new features and promotions</p>
+            </div>
+
+            <h3>In-App Notifications</h3>
+
+            <div class="notification-setting">
+                <label class="checkbox-label">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    System announcements
+                </label>
+                <p>Show important system announcements</p>
+            </div>
+
+            <div class="notification-setting">
+                <label class="checkbox-label">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    Security alerts
+                </label>
+                <p>Show security-related notifications</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Preferences</button>
+        </form>
+    </div>
+{% endblock %}

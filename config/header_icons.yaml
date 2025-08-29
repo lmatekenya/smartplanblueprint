@@ -1,0 +1,37 @@
+# config/routes.yaml
+app_help_documentation:
+    path: /help/documentation
+    controller: App\Controller\HeaderIcons\HelpController::documentation
+
+app_help_faq:
+    path: /help/faq
+    controller: App\Controller\HeaderIcons\HelpController::faq
+
+app_help_contact:
+    path: /help/contact
+    controller: App\Controller\HeaderIcons\HelpController::contact
+
+app_settings_profile:
+    path: /settings/profile
+    controller: App\Controller\HeaderIcons\SettingsController::profile
+
+app_settings_notifications:
+    path: /settings/notifications
+    controller: App\Controller\HeaderIcons\SettingsController::notifications
+
+app_settings_security:
+    path: /settings/security
+    controller: App\Controller\HeaderIcons\SettingsController::security
+
+app_settings_theme:
+    path: /settings/theme
+    controller: App\Controller\HeaderIcons\SettingsController::changeTheme
+    methods: POST
+
+app_profile_view:
+    path: /profile
+    controller: App\Controller\HeaderIcons\ProfileController::view
+
+app_profile_edit:
+    path: /profile/edit
+    controller: App\Controller\HeaderIcons\ProfileController::edit

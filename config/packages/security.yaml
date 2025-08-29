@@ -113,7 +113,7 @@ security:
         in_memory:
             memory:
                 users:
-                    admin@mail.com:
+                    superadmin@system.com:
                         # Hashed version of admin1234
                         password: '$2y$13$V3kcSFildW.R69cnzm3m0eqmNbqpoPvNcWnCbRNwrGQrFYXUMfJcu'
                         roles: ['ROLE_SUPER_ADMIN', 'ROLE_USER']
@@ -153,6 +153,9 @@ security:
         - { path: ^/limits, roles: ROLE_USER }
         - { path: ^/reports, roles: ROLE_USER }
         - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/help, roles: ROLE_USER }
+        - { path: ^/settings, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
 
 #security:
 #

@@ -1,0 +1,30 @@
+{# templates/header_icons/help/faq.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}FAQ - PrepaidPlus{% endblock %}
+
+{% block header_title %}Frequently Asked Questions{% endblock %}
+{% block breadcrumb %}Help / FAQ{% endblock %}
+
+{% block body %}
+    <div class="dashboard-card">
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>Account Management</h3>
+        <div class="faq-item">
+            <h4>How do I reset my password?</h4>
+            <p>You can reset your password from the login page by clicking "Forgot Password" or from your profile settings.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>How do I update my account information?</h4>
+            <p>Navigate to your profile page from the header dropdown to update your personal information.</p>
+        </div>
+
+        <h3>Merchant Management</h3>
+        <div class="faq-item">
+            <h4>How do I add a new merchant?</h4>
+            <p>From the dashboard, click "Add New Merchant" and fill in the required information.</p>
+        </div>
+    </div>
+{% endblock %}

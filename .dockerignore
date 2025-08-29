@@ -1,0 +1,17 @@
+
+.git/
+docker/
+var/
+vendor/
+node_modules/
+.env
+.env.local
+.env.test
+.env.production
+docker-compose.yml
+README.md
+.idea/
+.vscode/
+*.log
+*.swp
+*.swo

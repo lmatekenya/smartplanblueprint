@@ -1,0 +1,335 @@
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}Search Results - Merchant Portal{% endblock %}#}
+
+{#{% block body %}#}
+{#    <div class="search-results" id="search-results">#}
+{#        <div class="no-results" id="no-results">#}
+{#            <i class="fas fa-search fa-2x"></i>#}
+{#            <p>Enter a search term to find merchants, transactions, or users</p>#}
+{#        </div>#}
+
+{#        <div class="loading" id="loading">#}
+{#            <i class="fas fa-spinner fa-spin"></i> Searching database...#}
+{#        </div>#}
+
+{#        <div id="results-container">#}
+{#            <!-- Results will be populated by JavaScript -->#}
+{#        </div>#}
+
+{#        <div class="pagination" id="pagination" style="display: none;">#}
+{#            <button id="prev-page" disabled>Previous</button>#}
+{#            <span id="page-info" style="margin: 0 10px; line-height: 35px;">Page 1 of 1</span>#}
+{#            <button id="next-page" disabled>Next</button>#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+
+{#{% block javascripts %}#}
+{#    <script>#}
+{#        // Pass Symfony route URLs to JavaScript#}
+{#        const SEARCH_API_URL = "{{ path('api_search') }}";#}
+{#        const SEARCH_HISTORY_URL = "{{ path('api_search_history') }}";#}
+{#        const APP_ENV = "{{ app.environment }}";#}
+{#    </script>#}
+{#{% endblock %}#}
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Search Results - PrepaidPlus{% endblock %}
+
+{% block header_title %}Search Results{% endblock %}
+
+{% block breadcrumb %}Search Results{% endblock %}
+
+{% block body %}
+    <div class="search-results" id="search-results">
+        <div class="no-results" id="no-results">
+            <i class="fas fa-search fa-2x"></i>
+            <p>Enter a search term to find merchants, transactions, or users</p>
+        </div>
+
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i> Searching database...
+        </div>
+
+        <div id="results-container">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button id="prev-page" disabled>Previous</button>
+            <span id="page-info" style="margin: 0 10px; line-height: 35px;">Page 1 of 1</span>
+            <button id="next-page" disabled>Next</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsContainer = document.getElementById('results-container');
+            const noResults = document.getElementById('no-results');
+            const loading = document.getElementById('loading');
+            const pagination = document.getElementById('pagination');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageInfo = document.getElementById('page-info');
+
+            let currentPage = 1;
+            const resultsPerPage = 5;
+            let currentResults = {};
+
+            // Get search query from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+
+            if (query && query.length > 2) {
+                performSearch(query);
+            } else {
+                loading.style.display = 'none';
+                noResults.style.display = 'block';
+            }
+
+            // Pagination handlers
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayResults(currentResults, currentPage);
+                        updatePagination();
+                    }
+                });
+            }
+
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', function() {
+                    const totalPages = Math.max(
+                        Math.ceil((currentResults.merchants || []).length / resultsPerPage),
+                        Math.ceil((currentResults.transactions || []).length / resultsPerPage),
+                        Math.ceil((currentResults.users || []).length / resultsPerPage)
+                    );
+
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayResults(currentResults, currentPage);
+                        updatePagination();
+                    }
+                });
+            }
+
+            // Perform search
+            async function performSearch(query) {
+                loading.style.display = 'block';
+                noResults.style.display = 'none';
+                resultsContainer.innerHTML = '';
+                pagination.style.display = 'none';
+
+                try {
+                    const response = await fetch(SEARCH_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ query: query }),
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Search request failed');
+                    }
+
+                    const data = await response.json();
+                    currentResults = data.results || {};
+
+                    displayResults(currentResults, currentPage);
+                    updatePagination();
+                } catch (error) {
+                    console.error('Search error:', error);
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error performing search. Please try again.</p>
+                        </div>
+                    `;
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+
+            // Display results with pagination
+            function displayResults(results, page) {
+                resultsContainer.innerHTML = '';
+
+                const hasMerchants = results.merchants && results.merchants.length > 0;
+                const hasTransactions = results.transactions && results.transactions.length > 0;
+                const hasUsers = results.users && results.users.length > 0;
+
+                if (!hasMerchants && !hasTransactions && !hasUsers) {
+                    noResults.style.display = 'block';
+                    noResults.innerHTML = `
+                        <i class="fas fa-search fa-2x"></i>
+                        <p>No results found for "${query}"</p>
+                    `;
+                    pagination.style.display = 'none';
+                    return;
+                }
+
+                noResults.style.display = 'none';
+                pagination.style.display = 'flex';
+
+                // Display merchants with pagination
+                if (hasMerchants) {
+                    const merchantsSection = document.createElement('div');
+                    merchantsSection.className = 'results-section';
+                    merchantsSection.innerHTML = `<div class="results-header">Merchants (${results.merchants.length} found)</div>`;
+
+                    const startIndex = (page - 1) * resultsPerPage;
+                    const endIndex = Math.min(startIndex + resultsPerPage, results.merchants.length);
+                    const paginatedMerchants = results.merchants.slice(startIndex, endIndex);
+
+                    paginatedMerchants.forEach(merchant => {
+                        const merchantElement = document.createElement('div');
+                        merchantElement.className = 'result-item merchant-result';
+                        merchantElement.innerHTML = `
+                            <div class="result-title">${merchant.name}</div>
+                            <div class="result-details">ID: ${merchant.id} | Category: ${merchant.category}</div>
+                        `;
+                        merchantsSection.appendChild(merchantElement);
+                    });
+
+                    resultsContainer.appendChild(merchantsSection);
+                }
+
+                // Display transactions with pagination
+                if (hasTransactions) {
+                    const transactionsSection = document.createElement('div');
+                    transactionsSection.className = 'results-section';
+                    transactionsSection.innerHTML = `<div class="results-header">Transactions (${results.transactions.length} found)</div>`;
+
+                    const startIndex = (page - 1) * resultsPerPage;
+                    const endIndex = Math.min(startIndex + resultsPerPage, results.transactions.length);
+                    const paginatedTransactions = results.transactions.slice(startIndex, endIndex);
+
+                    paginatedTransactions.forEach(transaction => {
+                        const transactionElement = document.createElement('div');
+                        transactionElement.className = 'result-item transaction-result';
+                        transactionElement.innerHTML = `
+                            <div class="result-title">${transaction.id}</div>
+                            <div class="result-details">Amount: $${transaction.amount} | Date: ${transaction.date} | Merchant: ${transaction.merchant}</div>
+                        `;
+                        transactionsSection.appendChild(transactionElement);
+                    });
+
+                    resultsContainer.appendChild(transactionsSection);
+                }
+
+                // Display users with pagination
+                if (hasUsers) {
+                    const usersSection = document.createElement('div');
+                    usersSection.className = 'results-section';
+                    usersSection.innerHTML = `<div class="results-header">Users (${results.users.length} found)</div>`;
+
+                    const startIndex = (page - 1) * resultsPerPage;
+                    const endIndex = Math.min(startIndex + resultsPerPage, results.users.length);
+                    const paginatedUsers = results.users.slice(startIndex, endIndex);
+
+                    paginatedUsers.forEach(user => {
+                        const userElement = document.createElement('div');
+                        userElement.className = 'result-item user-result';
+                        userElement.innerHTML = `
+                            <div class="result-title">${user.name}</div>
+                            <div class="result-details">Email: ${user.email} | Role: ${user.role}</div>
+                        `;
+                        usersSection.appendChild(userElement);
+                    });
+
+                    resultsContainer.appendChild(usersSection);
+                }
+            }
+
+            // Update pagination controls
+            function updatePagination() {
+                const totalMerchantPages = Math.ceil((currentResults.merchants || []).length / resultsPerPage);
+                const totalTransactionPages = Math.ceil((currentResults.transactions || []).length / resultsPerPage);
+                const totalUserPages = Math.ceil((currentResults.users || []).length / resultsPerPage);
+
+                const totalPages = Math.max(totalMerchantPages, totalTransactionPages, totalUserPages);
+
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+
+                if (totalPages <= 1) {
+                    pagination.style.display = 'none';
+                } else {
+                    pagination.style.display = 'flex';
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+
+{# templates/header_icons/search/results.html.twig #}
+{#{% extends 'base.html.twig' %}#}
+
+{#{% block title %}Search Results - PrepaidPlus{% endblock %}#}
+
+{#{% block header_title %}Search Results{% endblock %}#}
+{#{% block breadcrumb %}Search / Results{% endblock %}#}
+
+{#{% block body %}#}
+{#    <div class="dashboard-card">#}
+{#        <h2>Search Results for "{{ query }}"</h2>#}
+
+{#        <div class="search-results">#}
+{#            {% if results.merchants is not empty %}#}
+{#                <div class="results-section">#}
+{#                    <h3 class="results-header">Merchants</h3>#}
+{#                    {% for merchant in results.merchants %}#}
+{#                        <div class="result-item merchant-result">#}
+{#                            <div class="result-title">{{ merchant.name }}</div>#}
+{#                            <div class="result-details">Type: {{ merchant.type }}</div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            {% endif %}#}
+
+{#            {% if results.transactions is not empty %}#}
+{#                <div class="results-section">#}
+{#                    <h3 class="results-header">Transactions</h3>#}
+{#                    {% for transaction in results.transactions %}#}
+{#                        <div class="result-item transaction-result">#}
+{#                            <div class="result-title">Transaction #{{ transaction.id }}</div>#}
+{#                            <div class="result-details">Amount: ${{ transaction.amount|number_format(2) }} • Status: {{ transaction.status }}</div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            {% endif %}#}
+
+{#            {% if results.users is not empty %}#}
+{#                <div class="results-section">#}
+{#                    <h3 class="results-header">Users</h3>#}
+{#                    {% for user in results.users %}#}
+{#                        <div class="result-item user-result">#}
+{#                            <div class="result-title">{{ user.name }}</div>#}
+{#                            <div class="result-details">Role: {{ user.role }}</div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            {% endif %}#}
+
+{#            {% if results.merchants is empty and results.transactions is empty and results.users is empty %}#}
+{#                <div class="no-results">#}
+{#                    <i class="fas fa-search fa-3x"></i>#}
+{#                    <h3>No results found for "{{ query }}"</h3>#}
+{#                    <p>Try different keywords or check your spelling</p>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
